@@ -198,7 +198,7 @@ class DB:
         WHERE legbyes != ''
         GROUP BY season) A5
         ON A4.season = A5.season
-
+        ORDER BY season ASC
         ''')
         data = self.my_cursor.fetchall()
         for item in data:
@@ -209,7 +209,8 @@ class DB:
             byes.append(item[4])
             legbyes.append(item[5])
 
-        return season, wides, noballs, extras, byes, legbyes
+
+        return sorted(season), wides, noballs, extras, byes, legbyes
 
     def total_wides(self):
         all_wides = []

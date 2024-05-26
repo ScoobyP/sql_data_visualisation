@@ -27,11 +27,12 @@ if option_button == 'General Info':
         st.subheader(f'Total fours: {fours}')
 
     st.subheader('Boundaries by season')
-    season, tot_six, tot_four = db.total_boundaries_by_season()
+    season_boundaries, tot_six, tot_four = db.total_boundaries_by_season()
 
     boundary_fig = go.Figure()
-    boundary_fig.add_trace(go.Scatter(x = season, y = tot_six, name = 'Sixes'))
-    boundary_fig.add_trace(go.Scatter(x=season, y=tot_four, name = 'Fours'))
+    boundary_fig.add_trace(go.Scatter(x = season_boundaries, y = tot_six, name = 'Sixes', mode = 'lines+markers'))
+    boundary_fig.add_trace(go.Scatter(x=season_boundaries, y=tot_four, name = 'Fours', mode = 'lines+markers'))
+    boundary_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(boundary_fig)
 
     st.subheader('ALL WICKETS by season')
@@ -40,7 +41,7 @@ if option_button == 'General Info':
 
     season_wic, category, tot_wic = db.total_wickets_by_category_by_season()
 
-    st.plotly_chart(px.line(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic, color=category, labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'}))
+    st.plotly_chart(px.line(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic, color=category, labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'}).update_layout(xaxis=dict(type='category')))
 
     st.subheader('ALL EXTRAS GIVEN')
 
@@ -69,6 +70,7 @@ if option_button == 'General Info':
     extras_fig.add_trace(go.Scatter(x=season_extras, y=byes,  name='Byes'))
     extras_fig.add_trace(go.Scatter(x=season_extras, y=legbyes,  name='Leg byes'))
 
+    extras_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(extras_fig)
 
 
