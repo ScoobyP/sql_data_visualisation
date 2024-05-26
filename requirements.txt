@@ -1,4 +1,5 @@
 streamlit
+plotly
 plotly.express
 plotly.graph_objects
 database
