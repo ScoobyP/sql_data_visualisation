@@ -2,6 +2,7 @@ import mysql.connector
 from dotenv import load_dotenv
 import os
 
+
 class DB:
 
     def __init__(self):
@@ -9,10 +10,10 @@ class DB:
             load_dotenv()
             self.mydb = mysql.connector.connect(
                 host='localhost',
-                user='root',
-                password=f'{os.getenv("password")}',
+                user=f'{os.getenv("user_name")}',
+                password=f'{os.getenv("user_pass")}',
                 port='3306',
-                database = 'cricket'
+                database='cricket'
             )
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
