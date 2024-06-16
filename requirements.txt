@@ -3,5 +3,5 @@ plotly
 mysql
 sqlalchemy
 pandas
-os
+
 
