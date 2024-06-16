@@ -1,6 +1,5 @@
 streamlit
-plotly.express
-plotly.graph_objects
+plotly
 dotenv
 mysql
 sqlalchemy
