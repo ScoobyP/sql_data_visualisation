@@ -4,4 +4,5 @@ mysql
 sqlalchemy
 pandas
 os
+python-dotenv
 
