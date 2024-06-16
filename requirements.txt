@@ -4,3 +4,7 @@ plotly.express
 plotly.graph_objects
 dotenv
 mysql
+sqlalchemy
+pandas
+os
+
