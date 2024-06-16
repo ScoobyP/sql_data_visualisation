@@ -311,5 +311,5 @@ class DB:
             bowler.append(item[0])
 
         return bowler
-
+if __name__ == "__main__":
 
