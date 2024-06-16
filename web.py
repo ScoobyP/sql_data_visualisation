@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 
 db = DB()
-st.sidebar.image('/Users/ishanp/Downloads/IPL-400x400jpg.webp', width = 200)
+st.sidebar.image('https://i1.wp.com/bl-i.thgim.com/public/incoming/1ogk5e/article25940328.ece/alternates/FREE_1200/IPL-400x400jpg?strip=all', width = 200)
 
 st.sidebar.title('Info')
 option_button = st.sidebar.radio('Select a category', options = ['General Info','Team name', 'Batsman record', 'Bowler record'])
