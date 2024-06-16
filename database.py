@@ -9,11 +9,11 @@ class DB:
         try:
             load_dotenv()
             self.mydb = mysql.connector.connect(
-                host='{}'.format(os.getenv("aiven_url1")),
-                user='{}'.format(os.getenv("aiven_user_name")),
-                password='{}'.format(os.getenv("aiven_user_pass")),
-                port='26631',
-                database='ipl_OLAP'
+                host=os.getenv("aiven_url1"),
+                user=os.getenv("aiven_user_name"),
+                password=os.getenv("aiven_user_pass"),
+                port=os.getenv("aiven_port"),
+                database=os.getenv("aiven_db2")
             )
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
