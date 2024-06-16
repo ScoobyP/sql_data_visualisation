@@ -1,6 +1,6 @@
 streamlit
 plotly
-mysql
+mysql-connector-python
 sqlalchemy
 pandas
 python-dotenv
