@@ -16,7 +16,7 @@ class DB:
                 #port='',
                 #database=''
             #)
-             self.mydb = mysql.connector.connect(
+            self.mydb = mysql.connector.connect(
                  host=os.getenv("aiven_url1"),
                  user=os.getenv("aiven_user_name"),
                  password=os.getenv("aiven_user_pass"),
