@@ -1,5 +1,6 @@
 import mysql.connector
 from dotenv import load_dotenv
+import pandas as pd
 import os
 
 
@@ -8,17 +9,24 @@ class DB:
     def __init__(self):
         try:
             load_dotenv()
-            self.mydb = mysql.connector.connect(
-                host=os.getenv("aiven_url1"),
-                user=os.getenv("aiven_user_name"),
-                password=os.getenv("aiven_user_pass"),
-                port=os.getenv("aiven_port"),
-                database=os.getenv("aiven_db2")
-            )
+            #self.mydb = mysql.connector.connect(
+                #host='localhost',
+                #user='',
+                #password='',
+                #port='',
+                #database=''
+            #)
+             self.mydb = mysql.connector.connect(
+                 host=os.getenv("aiven_url1"),
+                 user=os.getenv("aiven_user_name"),
+                 password=os.getenv("aiven_user_pass"),
+                 port=os.getenv("aiven_port"),
+                 database=os.getenv("aiven_db2")
+             )
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
-        except:
-            print('Connection Error')
+        except Exception as e:
+            print(f'Connection Error: {e}')
 
     def fetch_all_player_names(self):
         # Extracting all player names
@@ -31,7 +39,7 @@ class DB:
         UNION
         SELECT bowler FROM cricket.ipl_OLAP.all_deliveries
         ''')
-        #self.mydb.commit()
+        # self.mydb.commit()
         all_player_names = self.my_cursor.fetchall()
 
         for name in all_player_names:
@@ -41,7 +49,7 @@ class DB:
 
     def fetch_all_teams(self):
         ipl_teams = []
-        #Extracting all team names
+        # Extracting all team names
 
         self.my_cursor.execute('''
         SELECT batting_team FROM ipl_OLAP.all_deliveries
@@ -54,6 +62,32 @@ class DB:
             ipl_teams.append(team[0])
 
         return ipl_teams
+
+    def fetch_current_teams(self):
+        current_teams = []
+        self.my_cursor.execute('''
+        SELECT DISTINCT all_deliveries.batting_team FROM ipl_OLAP.all_deliveries
+        WHERE season = (SELECT MAX(season) FROM ipl_OLAP.all_deliveries)
+        UNION
+        SELECT DISTINCT all_deliveries.bowling_team FROM ipl_OLAP.all_deliveries
+        WHERE season = (SELECT MAX(season) FROM ipl_OLAP.all_deliveries)
+        '''.format(self.fetch_all_teams()))
+        curr_team = self.my_cursor.fetchall()
+        for team in curr_team:
+            current_teams.append(team[0])
+
+        return current_teams
+
+    def fetch_current_and_defunct_teams(self):
+        current_teams = self.fetch_current_teams()
+        all_teams_pnp = []
+        for team in self.matches_by_all_teams()[0]:
+            if team not in current_teams:
+                all_teams_pnp.append(team + ' +')
+            else:
+                all_teams_pnp.append(team)
+
+        return sorted(all_teams_pnp)
 
     def matches_by_all_teams(self):
         teams = []
@@ -73,7 +107,42 @@ class DB:
             teams.append(item[0])
             matches.append(item[1])
 
-        return teams,matches
+        return sorted(teams), matches
+
+    def fetch_cities_played_in(self):
+        season = []
+        city = []
+        num_mat = []
+
+        self.my_cursor.execute('''
+        SELECT season, 
+        city,
+        COUNT(city) AS 'num_matches'
+        FROM ipl_OLAP.all_matches
+        GROUP BY season, city
+        ''')
+        data = self.my_cursor.fetchall()
+        for i in data:
+            season.append(i[0])
+            city.append(i[1])
+            num_mat.append(i[2])
+
+        df_original = pd.DataFrame({'Season': season, 'City': city, 'Matches': num_mat})
+
+        return df_original.sort_values('Season', ascending=True)
+    def fetch_matches_by_season(self):
+        num_matches = []
+        season = []
+        self.my_cursor.execute('''
+        SELECT season, COUNT(*) AS 'num_matches' FROM ipl_OLAP.all_matches
+        GROUP BY season
+        ''')
+        data= self.my_cursor.fetchall()
+        for i in data:
+            season.append(i[0])
+            num_matches.append(i[1])
+
+        return sorted(season), num_matches
 
     def total_six(self):
         sixes = []
@@ -158,19 +227,18 @@ class DB:
     def total_wickets_by_category_by_season(self):
         season = []
         wickets_category = []
-        total_wickets =[]
+        total_wickets = []
         self.my_cursor.execute('''
         SELECT season, wicket_type, COUNT(wicket_type) AS 'total_wickets' FROM ipl_OLAP.all_deliveries
         WHERE wicket_type != ''
-        GROUP BY season, wicket_type
-                ''')
+        GROUP BY season, wicket_type''')
         data = self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
             wickets_category.append(item[1])
             total_wickets.append(item[2])
 
-        return season, wickets_category, total_wickets
+        return sorted(season), wickets_category, total_wickets
 
     def all_extras_by_category_season(self):
         season = []
@@ -209,7 +277,6 @@ class DB:
             extras.append(item[3])
             byes.append(item[4])
             legbyes.append(item[5])
-
 
         return sorted(season), wides, noballs, extras, byes, legbyes
 
@@ -314,5 +381,5 @@ class DB:
 
 
 if __name__ == "__main__":
-    pass
-
+    db = DB()
+    print(db.fetch_cities_played_in())

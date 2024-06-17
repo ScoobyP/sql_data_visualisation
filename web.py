@@ -20,6 +20,17 @@ if option_button == 'General Info':
     st.plotly_chart(px.pie(db.matches_by_all_teams(), names= p_df_teams, values=matches))
     st.text('+ indicates defunct teams')
 
+    st.subheader('Number of Matches by Season')
+    matches = go.Figure()
+    matches.add_trace(go.Scatter(x=db.fetch_matches_by_season()[0], y=db.fetch_matches_by_season()[1], mode='lines+markers', name='Total Matches')).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
+    st.plotly_chart(matches)
+
+    st.subheader('Matches in Cities by Season')
+    matches_in_cities = db.fetch_cities_played_in()
+    matches_in_cities = px.bar(matches_in_cities, x= matches_in_cities['Season'], y= matches_in_cities['Matches'], color=matches_in_cities['City'], labels={'x': "Seasons", 'Matches': "IPL Matches", 'City':"Cities"})
+    matches_in_cities.update_layout(xaxis=dict(type='category',categoryorder= 'category ascending'), barmode='stack')
+
+    st.plotly_chart(matches_in_cities)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -38,6 +49,8 @@ if option_button == 'General Info':
     boundary_fig.add_trace(go.Scatter(x=season_boundaries, y=tot_four, name = 'Fours', mode = 'lines+markers'))
     boundary_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(boundary_fig)
+
+
 
     st.subheader('ALL WICKETS by season')
     all_wic = db.total_wickets()
