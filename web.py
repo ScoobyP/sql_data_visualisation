@@ -15,7 +15,11 @@ if option_button == 'General Info':
     all_matches = db.total_matches()
     st.subheader(f'Total matches played: {all_matches}')
     teams, matches = db.matches_by_all_teams()
-    st.plotly_chart(px.pie(db.matches_by_all_teams(), names=teams, values=matches))
+    p_df_teams = db.fetch_current_and_defunct_teams()
+
+    st.plotly_chart(px.pie(db.matches_by_all_teams(), names= p_df_teams, values=matches))
+    st.text('+ indicates defunct teams')
+
 
     col1, col2 = st.columns(2)
     with col1:
@@ -41,8 +45,10 @@ if option_button == 'General Info':
 
     season_wic, category, tot_wic = db.total_wickets_by_category_by_season()
 
-    st.plotly_chart(px.line(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic, color=category, labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'}).update_layout(xaxis=dict(type='category')))
-
+    wic_fig = px.scatter(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic,color=category ,labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'})
+    wic_fig.update_traces(marker=dict(size=15))
+    wic_fig.update_layout(xaxis=dict(type='category'))
+    st.plotly_chart(wic_fig)
     st.subheader('ALL EXTRAS GIVEN')
 
     ex_col1, ex_col2,ex_col3,ex_col4, ex_col5 = st.columns(5)
