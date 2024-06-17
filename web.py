@@ -28,7 +28,7 @@ if option_button == 'General Info':
     st.subheader('Matches in Cities by Season')
     matches_in_cities = db.fetch_cities_played_in()
     matches_in_cities = px.bar(matches_in_cities, x= matches_in_cities['Season'], y= matches_in_cities['Matches'], color=matches_in_cities['City'], labels={'x': "Seasons", 'Matches': "IPL Matches", 'City':"Cities"})
-    matches_in_cities.update_layout(xaxis=dict(type='category',categoryorder= 'category ascending'), barmode='stack')
+    matches_in_cities.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), barmode='stack')
 
     st.plotly_chart(matches_in_cities)
 
@@ -52,7 +52,7 @@ if option_button == 'General Info':
 
 
 
-    st.subheader('ALL WICKETS by season')
+    st.subheader('All Wickets by Season')
     all_wic = db.total_wickets()
     st.subheader(f'Wickets taken till date: {all_wic}')
 
@@ -60,7 +60,7 @@ if option_button == 'General Info':
 
     wic_fig = px.scatter(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic,color=category ,labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'})
     wic_fig.update_traces(marker=dict(size=15))
-    wic_fig.update_layout(xaxis=dict(type='category'))
+    wic_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
     st.plotly_chart(wic_fig)
     st.subheader('ALL EXTRAS GIVEN')
 
