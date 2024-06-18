@@ -23,7 +23,7 @@ class DB:
                  port=os.getenv("aiven_port"),
                  database=os.getenv("aiven_db2")
 
-             #)
+             )
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -277,7 +277,8 @@ class DB:
             total_wickets.append(item[2])
 
         df = pd.DataFrame({'Season': sorted(season), 'Category': wickets_category, 'Total Wickets': total_wickets})
-        return df
+        df1 = df.sort_values(by='Season')
+        return df1
 
     def all_extras_by_category_season(self):
         season = []
@@ -300,8 +301,9 @@ class DB:
             legbyes.append(item[4])
             penalty.append(item[5])
 
-        df = pd.DataFrame({'Season': sorted(season), 'Wides':wides, 'No Balls': noballs, 'Penalty': penalty, 'Byes': byes, 'Leg Byes': legbyes  })
-        return df
+        df = pd.DataFrame({'Season': season, 'Wides':wides, 'No Balls': noballs, 'Penalty': penalty, 'Byes': byes, 'Leg Byes': legbyes  })
+        df1 = df.sort_values(by='Season')
+        return df1
 
     def total_wides(self):
         all_wides = []

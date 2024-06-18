@@ -39,7 +39,7 @@ if option_button == 'General Info':
     runs_fig.add_trace(go.Scatter(x=runs_df['Season'],y=runs_df['Runs Scored'], name = 'Scored', mode='markers'))
     runs_fig.add_trace(go.Scatter(x=runs_df['Season'], y=runs_df['Extras'],name = 'Extras', mode='markers'))
     runs_fig.update_traces(marker=dict(size=20, symbol='diamond-tall-dot'))
-    runs_fig.update_layout(xaxis=dict(type='category'))
+    runs_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
     st.plotly_chart(runs_fig)
 
 
@@ -74,6 +74,7 @@ if option_button == 'General Info':
     wic_fig.update_traces(marker=dict(size=15))
     wic_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
     st.plotly_chart(wic_fig)
+
     st.subheader(f'ALL EXTRAS GIVEN: {db.total_extras()}')
 
     ex_col1, ex_col2,ex_col3,ex_col4, ex_col5 = st.columns(5)
@@ -94,11 +95,11 @@ if option_button == 'General Info':
 
     extras_df = db.all_extras_by_category_season()
     extras_fig = go.Figure()
-    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y = extras_df['Wides'], name = 'Wides' ))
-    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y= extras_df['No Balls'],  name='No Balls'))
-    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Byes'],  name='Byes'))
-    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Leg Byes'],  name='Leg Byes'))
-    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Penalty'], name='Penalties'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y = extras_df['Wides'], name = 'Wides', mode='lines+markers' ))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y= extras_df['No Balls'],  name='No Balls', mode='lines+markers'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Byes'],  name='Byes', mode='lines+markers'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Leg Byes'],  name='Leg Byes', mode='lines+markers'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Penalty'], name='Penalties', mode='lines+markers'))
 
     extras_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(extras_fig)
