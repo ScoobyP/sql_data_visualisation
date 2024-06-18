@@ -56,13 +56,13 @@ if option_button == 'General Info':
     all_wic = db.total_wickets()
     st.subheader(f'Wickets taken till date: {all_wic}')
 
-    season_wic, category, tot_wic = db.total_wickets_by_category_by_season()
+    wickets_df = db.total_wickets_by_category_by_season()
 
-    wic_fig = px.scatter(db.total_wickets_by_category_by_season(), x = season_wic, y = tot_wic,color=category ,labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'})
+    wic_fig = px.scatter(wickets_df, x = wickets_df['Season'], y = wickets_df['Total Wickets'],color=wickets_df['Category'] ,labels = {'color': 'Category', 'x': 'Season', 'y': 'Total Wickets'})
     wic_fig.update_traces(marker=dict(size=15))
     wic_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
     st.plotly_chart(wic_fig)
-    st.subheader('ALL EXTRAS GIVEN')
+    st.subheader(f'ALL EXTRAS GIVEN: {db.total_extras()}')
 
     ex_col1, ex_col2,ex_col3,ex_col4, ex_col5 = st.columns(5)
     with ex_col1:
@@ -72,22 +72,21 @@ if option_button == 'General Info':
         all_noballs = db.total_noballs()
         st.subheader(f'No Balls: {all_noballs}')
     with ex_col3:
-        all_extras = db.total_extras()
-        st.subheader(f'Extras: {all_extras}')
+        st.subheader(f'Penalties: {db.total_penalty()}')
     with ex_col4:
         all_byes = db.total_byes()
-        st.subheader(f'All Byes : {all_byes}')
+        st.subheader(f'Byes : {all_byes}')
     with ex_col5:
         all_legbyes = db.total_legbyes()
         st.subheader(f'Leg Byes: {all_legbyes}')
 
-    season_extras, wides, noball, extras, byes, legbyes = db.all_extras_by_category_season()
+    extras_df = db.all_extras_by_category_season()
     extras_fig = go.Figure()
-    extras_fig.add_trace(go.Scatter(x=season_extras, y = wides, name = 'Wides' ))
-    extras_fig.add_trace(go.Scatter(x=season_extras, y=noball,  name='No Balls'))
-    extras_fig.add_trace(go.Scatter(x=season_extras, y=extras,  name='Extras'))
-    extras_fig.add_trace(go.Scatter(x=season_extras, y=byes,  name='Byes'))
-    extras_fig.add_trace(go.Scatter(x=season_extras, y=legbyes,  name='Leg byes'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y = extras_df['Wides'], name = 'Wides' ))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y= extras_df['No Balls'],  name='No Balls'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Byes'],  name='Byes'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Leg Byes'],  name='Leg Byes'))
+    extras_fig.add_trace(go.Scatter(x=extras_df['Season'], y=extras_df['Penalty'], name='Penalties'))
 
     extras_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(extras_fig)

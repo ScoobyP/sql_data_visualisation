@@ -9,20 +9,20 @@ class DB:
     def __init__(self):
         try:
             load_dotenv()
-            #self.mydb = mysql.connector.connect(
-                #host='localhost',
-                #user='',
-                #password='',
-                #port='',
-                #database=''
-            #)
             self.mydb = mysql.connector.connect(
-                 host=os.getenv("aiven_url1"),
-                 user=os.getenv("aiven_user_name"),
-                 password=os.getenv("aiven_user_pass"),
-                 port=os.getenv("aiven_port"),
-                 database=os.getenv("aiven_db2")
-             )
+                host='localhost',
+                user='root',
+                password='',
+                port='3306',
+                database='ipl_OLAP'
+            )
+            #self.mydb = mysql.connector.connect(
+                 #host=os.getenv("aiven_url1"),
+                 #user=os.getenv("aiven_user_name"),
+                 #password=os.getenv("aiven_user_pass"),
+                 #port=os.getenv("aiven_port"),
+                 #database=os.getenv("aiven_db2")
+             #)
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -33,11 +33,11 @@ class DB:
 
         all_names = []
         self.my_cursor.execute('''
-        SELECT non_striker FROM cricket.ipl_OLAP.all_deliveries
+        SELECT non_striker FROM ipl_OLAP.all_deliveries
         UNION
-        SELECT striker FROM cricket.ipl_OLAP.all_deliveries
+        SELECT striker FROM ipl_OLAP.all_deliveries
         UNION
-        SELECT bowler FROM cricket.ipl_OLAP.all_deliveries
+        SELECT bowler FROM ipl_OLAP.all_deliveries
         ''')
         # self.mydb.commit()
         all_player_names = self.my_cursor.fetchall()
@@ -204,13 +204,23 @@ class DB:
     def total_runs_given_in_extras(self):
         extras = []
         self.my_cursor.execute('''
-        SELECT SUM(extras)+SUM(wides)+SUM(noballs) AS 'total_extras' FROM ipl_OLAP.all_deliveries
+        SELECT SUM(extras)+SUM(wides)+SUM(noballs)+SUM(byes)+SUM(legbyes)+SUM(penalty) AS 'total_extras' FROM ipl_OLAP.all_deliveries
                 ''')
         data = self.my_cursor.fetchall()
         for item in data:
             extras.append(item[0])
 
         return extras
+
+    def total_penalty(self):
+        pen = []
+        self.my_cursor.execute('''
+        SELECT SUM(penalty) AS 'total_penalty' FROM ipl_OLAP.all_deliveries
+        ''')
+        data = self.my_cursor.fetchone()
+        for i in data:
+            pen.append(int(i))
+        return pen[0]
 
     def total_wickets_taken(self):
         wickets = []
@@ -238,105 +248,85 @@ class DB:
             wickets_category.append(item[1])
             total_wickets.append(item[2])
 
-        return sorted(season), wickets_category, total_wickets
+        df = pd.DataFrame({'Season': sorted(season), 'Category': wickets_category, 'Total Wickets': total_wickets})
+        return df
 
     def all_extras_by_category_season(self):
         season = []
         wides = []
         noballs = []
-        extras = []
+        penalty = []
         byes = []
         legbyes = []
         self.my_cursor.execute('''
-        SELECT A1.season, A1.wides, A2.no_ball, A3.extras, A4.byes, A5.legbyes FROM (SELECT season, COUNT(wides) AS 'wides' FROM ipl_OLAP.all_deliveries
-        WHERE wides != ''
-        GROUP BY season) A1
-        JOIN  (SELECT season, COUNT(noballs) AS 'no_ball' FROM ipl_OLAP.all_deliveries
-        WHERE noballs != ''
-        GROUP BY season) A2
-        ON A1.season = A2.season
-        JOIN (SELECT season, COUNT(extras) AS 'extras' FROM ipl_OLAP.all_deliveries
-        WHERE extras != ''
-        GROUP BY season) A3
-        ON A2.season = A3.season
-        JOIN (SELECT season, COUNT(byes) AS 'byes' FROM ipl_OLAP.all_deliveries
-        WHERE byes != ''
-        GROUP BY season) A4
-        ON A3.season = A4.season
-        JOIN (SELECT season, COUNT(legbyes) AS 'legbyes' FROM ipl_OLAP.all_deliveries
-        WHERE legbyes != ''
-        GROUP BY season) A5
-        ON A4.season = A5.season
-        ORDER BY season ASC
+        SELECT season, SUM(wides), SUM(noballs), SUM(byes), SUM(legbyes), SUM(penalty)
+        FROM ipl_OLAP.all_deliveries
+        GROUP BY season
         ''')
         data = self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
             wides.append(item[1])
             noballs.append(item[2])
-            extras.append(item[3])
-            byes.append(item[4])
-            legbyes.append(item[5])
+            byes.append(item[3])
+            legbyes.append(item[4])
+            penalty.append(item[5])
 
-        return sorted(season), wides, noballs, extras, byes, legbyes
+        df = pd.DataFrame({'Season': sorted(season), 'Wides':wides, 'No Balls': noballs, 'Penalty': penalty, 'Byes': byes, 'Leg Byes': legbyes  })
+        return df
 
     def total_wides(self):
         all_wides = []
         self.my_cursor.execute('''
-        SELECT COUNT(wides) AS 'wides' FROM ipl_OLAP.all_deliveries
-        WHERE wides != ''
+        SELECT SUM(wides) AS 'wides' FROM ipl_OLAP.all_deliveries
         ''')
-        data = self.my_cursor.fetchall()
+        data = self.my_cursor.fetchone()
         for item in data:
-            all_wides.append(item[0])
+            all_wides.append(int(item))
 
         return all_wides[0]
 
     def total_noballs(self):
         all_noballs = []
         self.my_cursor.execute('''
-        SELECT COUNT(noballs) AS 'no_balls' FROM ipl_OLAP.all_deliveries
-        WHERE noballs != ''
+        SELECT SUM(noballs) AS 'no_balls' FROM ipl_OLAP.all_deliveries
         ''')
-        data = self.my_cursor.fetchall()
+        data = self.my_cursor.fetchone()
         for item in data:
-            all_noballs.append(item[0])
+            all_noballs.append(int(item))
 
         return all_noballs[0]
 
     def total_extras(self):
         all_extras = []
         self.my_cursor.execute('''
-        SELECT COUNT(extras) AS 'extras' FROM ipl_OLAP.all_deliveries
-        WHERE extras != ''
+        SELECT SUM(extras) AS 'extras' FROM ipl_OLAP.all_deliveries
         ''')
-        data = self.my_cursor.fetchall()
+        data = self.my_cursor.fetchone()
         for item in data:
-            all_extras.append(item[0])
+            all_extras.append(int(item))
 
         return all_extras[0]
 
     def total_byes(self):
         all_byes = []
         self.my_cursor.execute('''
-        SELECT COUNT(byes) AS 'byes' FROM ipl_OLAP.all_deliveries
-        WHERE byes != ''
+        SELECT SUM(byes) AS 'byes' FROM ipl_OLAP.all_deliveries
         ''')
-        data = self.my_cursor.fetchall()
+        data = self.my_cursor.fetchone()
         for item in data:
-            all_byes.append(item[0])
+            all_byes.append(int(item))
 
         return all_byes[0]
 
     def total_legbyes(self):
         all_legbyes = []
         self.my_cursor.execute('''
-        SELECT COUNT(legbyes) AS 'legbyes' FROM ipl_OLAP.all_deliveries
-        WHERE legbyes != ''
+        SELECT SUM(legbyes) AS 'legbyes' FROM ipl_OLAP.all_deliveries
         ''')
-        data = self.my_cursor.fetchall()
+        data = self.my_cursor.fetchone()
         for item in data:
-            all_legbyes.append(item[0])
+            all_legbyes.append(int(item))
 
         return all_legbyes[0]
 
@@ -383,3 +373,4 @@ class DB:
 if __name__ == "__main__":
     db = DB()
     print(db.fetch_cities_played_in())
+    print(db.total_wickets_by_category_by_season())
