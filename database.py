@@ -23,7 +23,7 @@ class DB:
                  port=os.getenv("aiven_port"),
                  database=os.getenv("aiven_db2")
 
-             )
+             #)
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -144,6 +144,33 @@ class DB:
             num_matches.append(i[1])
 
         return sorted(season), num_matches
+
+    def total_ipl_runs(self):
+
+        self.my_cursor.execute('''
+        SELECT SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries
+        ''')
+        runs = self.my_cursor.fetchone()
+        return int(runs[0])#
+
+
+    def total_runs(self):
+        s = []
+        run_scored= []
+        run_extras = []
+        all_runs = []
+        self.my_cursor.execute('''
+        SELECT season,SUM(runs_off_bat),SUM(extras), SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries 
+        GROUP BY season
+        ''')
+        data = self.my_cursor.fetchall()
+        for i in data:
+            s.append(i[0])
+            run_scored.append(i[1])
+            run_extras.append(i[2])
+            all_runs.append(i[3])
+        df= pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
+        return df
 
     def total_six(self):
         sixes = []
