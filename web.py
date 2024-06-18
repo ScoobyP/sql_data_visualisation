@@ -32,6 +32,17 @@ if option_button == 'General Info':
 
     st.plotly_chart(matches_in_cities)
 
+    st.subheader(f'Total IPL Runs: {db.total_ipl_runs()}')
+    runs_df = db.total_runs()
+    runs_fig = go.Figure()
+    runs_fig.add_trace(go.Scatter(x=runs_df['Season'], y=runs_df['Total Runs'], name = 'Total Runs', mode='markers'))
+    runs_fig.add_trace(go.Scatter(x=runs_df['Season'],y=runs_df['Runs Scored'], name = 'Scored', mode='markers'))
+    runs_fig.add_trace(go.Scatter(x=runs_df['Season'], y=runs_df['Extras'],name = 'Extras', mode='markers'))
+    runs_fig.update_traces(marker=dict(size=20, symbol='diamond-tall-dot'))
+    runs_fig.update_layout(xaxis=dict(type='category'))
+    st.plotly_chart(runs_fig)
+
+
     col1, col2 = st.columns(2)
     with col1:
         sixes = db.total_six()
@@ -47,6 +58,7 @@ if option_button == 'General Info':
     boundary_fig = go.Figure()
     boundary_fig.add_trace(go.Scatter(x = season_boundaries, y = tot_six, name = 'Sixes', mode = 'lines+markers'))
     boundary_fig.add_trace(go.Scatter(x=season_boundaries, y=tot_four, name = 'Fours', mode = 'lines+markers'))
+    boundary_fig.update_traces(marker=dict(size=15))
     boundary_fig.update_layout(xaxis=dict(type='category'))
     st.plotly_chart(boundary_fig)
 
