@@ -1,4 +1,5 @@
 import mysql.connector
+import streamlit as st
 from dotenv import load_dotenv
 import pandas as pd
 import os
@@ -29,6 +30,8 @@ class DB:
         except Exception as e:
             print(f'Connection Error: {e}')
 
+    
+
     def fetch_all_player_names(self):
         # Extracting all player names
 
@@ -48,6 +51,8 @@ class DB:
 
         return all_names
 
+    
+
     def fetch_all_teams(self):
         ipl_teams = []
         # Extracting all team names
@@ -64,6 +69,9 @@ class DB:
 
         return ipl_teams
 
+    
+
+
     def fetch_current_teams(self):
         current_teams = []
         self.my_cursor.execute('''
@@ -79,16 +87,22 @@ class DB:
 
         return current_teams
 
+    
+
+
     def fetch_current_and_defunct_teams(self):
         current_teams = self.fetch_current_teams()
         all_teams_pnp = []
         for team in self.matches_by_all_teams()[0]:
             if team not in current_teams:
-                all_teams_pnp.append(team + ' +')
+                all_teams_pnp.append(team + ' *X*')
             else:
                 all_teams_pnp.append(team)
 
         return sorted(all_teams_pnp)
+
+    
+
 
     def matches_by_all_teams(self):
         teams = []
@@ -109,6 +123,9 @@ class DB:
             matches.append(item[1])
 
         return sorted(teams), matches
+
+    
+
 
     def fetch_cities_played_in(self):
         season = []
@@ -131,6 +148,10 @@ class DB:
         df_original = pd.DataFrame({'Season': season, 'City': city, 'Matches': num_mat})
 
         return df_original.sort_values('Season', ascending=True)
+
+    
+
+
     def fetch_matches_by_season(self):
         num_matches = []
         season = []
@@ -145,6 +166,9 @@ class DB:
 
         return sorted(season), num_matches
 
+    
+
+
     def total_ipl_runs(self):
 
         self.my_cursor.execute('''
@@ -152,6 +176,8 @@ class DB:
         ''')
         runs = self.my_cursor.fetchone()
         return int(runs[0])#
+
+    
 
 
     def total_runs(self):
@@ -172,6 +198,9 @@ class DB:
         df= pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
         return df
 
+    
+
+
     def total_six(self):
         sixes = []
         self.my_cursor.execute('''
@@ -184,6 +213,9 @@ class DB:
 
         return sixes[0][0]
 
+    
+
+
     def total_fours(self):
         fours = []
         self.my_cursor.execute('''
@@ -195,6 +227,9 @@ class DB:
             fours.append(item)
 
         return fours[0][0]
+
+    
+
 
     def total_boundaries_by_season(self):
         season = []
@@ -218,6 +253,9 @@ class DB:
 
         return season, sixes, fours
 
+    
+
+
     def total_balls_thrown(self):
         balls_thrown = []
         self.my_cursor.execute('''
@@ -229,6 +267,8 @@ class DB:
 
         return balls_thrown
 
+    
+
 
     def total_penalty(self):
         pen = []
@@ -239,6 +279,8 @@ class DB:
         for i in data:
             pen.append(int(i))
         return pen[0]
+
+    
 
 
     def total_wickets_by_category_by_season(self):
@@ -258,6 +300,9 @@ class DB:
         df = pd.DataFrame({'Season': season, 'Category': wickets_category, 'Total Wickets': total_wickets})
         df1 = df.sort_values(by='Season')
         return df1
+
+    
+
 
     def all_extras_by_category_season(self):
         season = []
@@ -284,6 +329,9 @@ class DB:
         df1 = df.sort_values(by='Season')
         return df1
 
+    
+
+
     def total_wides(self):
         all_wides = []
         self.my_cursor.execute('''
@@ -294,6 +342,9 @@ class DB:
             all_wides.append(int(item))
 
         return all_wides[0]
+
+    
+
 
     def total_noballs(self):
         all_noballs = []
@@ -306,6 +357,9 @@ class DB:
 
         return all_noballs[0]
 
+    
+
+
     def total_extras(self):
         all_extras = []
         self.my_cursor.execute('''
@@ -316,6 +370,9 @@ class DB:
             all_extras.append(int(item))
 
         return all_extras[0]
+
+    
+
 
     def total_byes(self):
         all_byes = []
@@ -328,6 +385,9 @@ class DB:
 
         return all_byes[0]
 
+    
+
+
     def total_legbyes(self):
         all_legbyes = []
         self.my_cursor.execute('''
@@ -339,6 +399,9 @@ class DB:
 
         return all_legbyes[0]
 
+    
+
+
     def total_wickets(self):
         self.my_cursor.execute('''
         SELECT COUNT(wicket_type) FROM ipl_OLAP.all_deliveries
@@ -347,12 +410,18 @@ class DB:
         data = self.my_cursor.fetchone()
         return data[0]
 
+    
+
+
     def total_matches(self):
         self.my_cursor.execute('''
         SELECT COUNT(DISTINCT match_id) AS 'all_matches' FROM ipl_OLAP.all_deliveries
         ''')
         data = self.my_cursor.fetchone()
         return data[0]
+
+    
+
 
     def all_batsman_names(self):
         batsman = []
@@ -365,6 +434,9 @@ class DB:
             batsman.append(item[0])
 
         return batsman
+
+    
+
 
     def all_bowler_names(self):
         bowler = []

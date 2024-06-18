@@ -4,7 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-db = DB()
+db=DB()
+
 st.sidebar.image('https://i1.wp.com/bl-i.thgim.com/public/incoming/1ogk5e/article25940328.ece/alternates/FREE_1200/IPL-400x400jpg?strip=all', width = 200)
 
 st.sidebar.title('Info')
@@ -12,20 +13,24 @@ option_button = st.sidebar.radio('Select a category', options = ['General Info',
 
 if option_button == 'General Info':
     st.header('Indian Premier League Analytics')
+
     all_matches = db.total_matches()
     st.subheader(f'Total matches played: {all_matches}')
+
     teams, matches = db.matches_by_all_teams()
     p_df_teams = db.fetch_current_and_defunct_teams()
 
     st.plotly_chart(px.pie(db.matches_by_all_teams(), names= p_df_teams, values=matches))
-    st.text('+ indicates defunct teams')
+    st.text('*x* indicates defunct teams')
 
     st.subheader('Number of Matches by Season')
     matches = go.Figure()
+
     matches.add_trace(go.Scatter(x=db.fetch_matches_by_season()[0], y=db.fetch_matches_by_season()[1], mode='lines+markers', name='Total Matches')).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
     st.plotly_chart(matches)
 
     st.subheader('Matches in Cities by Season')
+
     matches_in_cities = db.fetch_cities_played_in()
     matches_in_cities = px.bar(matches_in_cities, x= matches_in_cities['Season'], y= matches_in_cities['Matches'], color=matches_in_cities['City'], labels={'x': "Seasons", 'Matches': "IPL Matches", 'City':"Cities"})
     matches_in_cities.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), barmode='stack')
