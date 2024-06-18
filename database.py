@@ -276,7 +276,7 @@ class DB:
             wickets_category.append(item[1])
             total_wickets.append(item[2])
 
-        df = pd.DataFrame({'Season': sorted(season), 'Category': wickets_category, 'Total Wickets': total_wickets})
+        df = pd.DataFrame({'Season': season, 'Category': wickets_category, 'Total Wickets': total_wickets})
         df1 = df.sort_values(by='Season')
         return df1
 
