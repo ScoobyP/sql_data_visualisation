@@ -372,6 +372,4 @@ class DB:
 
 
 if __name__ == "__main__":
-    db = DB()
-    print(db.fetch_cities_played_in())
-    print(db.total_wickets_by_category_by_season())
+    pass
