@@ -72,7 +72,7 @@ class DB:
         UNION
         SELECT DISTINCT all_deliveries.bowling_team FROM ipl_OLAP.all_deliveries
         WHERE season = (SELECT MAX(season) FROM ipl_OLAP.all_deliveries)
-        '''.format(self.fetch_all_teams()))
+        ''')
         curr_team = self.my_cursor.fetchall()
         for team in curr_team:
             current_teams.append(team[0])
