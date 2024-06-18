@@ -229,16 +229,6 @@ class DB:
 
         return balls_thrown
 
-    def total_runs_given_in_extras(self):
-        extras = []
-        self.my_cursor.execute('''
-        SELECT SUM(extras)+SUM(wides)+SUM(noballs)+SUM(byes)+SUM(legbyes)+SUM(penalty) AS 'total_extras' FROM ipl_OLAP.all_deliveries
-                ''')
-        data = self.my_cursor.fetchall()
-        for item in data:
-            extras.append(item[0])
-
-        return extras
 
     def total_penalty(self):
         pen = []
@@ -250,17 +240,6 @@ class DB:
             pen.append(int(i))
         return pen[0]
 
-    def total_wickets_taken(self):
-        wickets = []
-        self.my_cursor.execute('''
-        SELECT COUNT(wicket_type) FROM ipl_OLAP.all_deliveries
-        WHERE wicket_type != ''
-                ''')
-        data = self.my_cursor.fetchall()
-        for item in data:
-            wickets.append(item[0])
-
-        return wickets
 
     def total_wickets_by_category_by_season(self):
         season = []
