@@ -92,7 +92,8 @@ class DB:
         for i in data:
             teams.append(i[0])
             times.append(i[1])
-        return teams, times
+        df = pd.DataFrame({'Teams': teams, 'Times': times})
+        return df
 
     def fetch_all_player_names(self):
         # Extracting all player names
