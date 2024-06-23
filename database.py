@@ -30,7 +30,33 @@ class DB:
         except Exception as e:
             print(f'Connection Error: {e}')
 
-    
+    def first_edition(self):
+        self.my_cursor.execute('''
+        SELECT season FROM all_deliveries
+        GROUP BY  season
+        ORDER BY season ASC LIMIT 1
+        ''')
+        data = self.my_cursor.fetchone()
+        return data[0]
+
+    def latest_edition(self):
+        self.my_cursor.execute('''
+        SELECT season FROM all_deliveries
+        GROUP BY  season
+        ORDER BY season DESC LIMIT 1
+        ''')
+        data = self.my_cursor.fetchone()
+        return data[0]
+
+    def next_edition(self):
+        self.my_cursor.execute('''
+        SELECT season + 1 AS 'next_season'
+        FROM (SELECT season FROM all_deliveries
+        GROUP BY  season
+        ORDER BY season DESC LIMIT 1) t1
+        ''')
+        data = self.my_cursor.fetchone()
+        return data[0]
 
     def fetch_all_player_names(self):
         # Extracting all player names
