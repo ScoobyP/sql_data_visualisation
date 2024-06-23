@@ -17,16 +17,24 @@ if option_button == 'General Info':
     st.divider()
     col1, col2 = st.columns([2,1])
     with col1:
-        st.subheader("Introduction")
+        st.subheader("Welcome to My Mini IPL Analysis Project!")
         st.text('''
-        The Indian Premier League (IPL), also known as the TATA IPL for sponsorship
-         reasons, is a men's Twenty20 (T20) cricket league held annually in India. 
-         Founded by the BCCI (the Board of Control for Cricket in India) in 2007, 
-         the league features ten state or city-based franchise teams.[3][4] The IPL
-          usually takes place during the summer, between March and May each year. 
-          It has an exclusive window in the ICC Future Tours Programme, resulting 
-          in fewer international cricket tours occurring during the IPL seasons.
+        Hello! Thank you for visiting my page. I'm excited to share with you my Mini
+        IPL Analysis Project, where I dive into the world of the Indian Premier League 
+        (IPL) using data.
 
+        A Simple Introduction to IPL
+        The IPL, or Indian Premier League, is a professional Twenty20 cricket league in
+        India. It started in 2008 and has become one of the most popular cricket 
+        tournaments in the world. Teams representing different cities compete against 
+        each other in a fast-paced, thrilling format that keeps fans on the edge of 
+        their seats.
+
+        What is My Project About?
+        In this project, I use data to explore various aspects of the IPL. By analyzing
+        match results, player performances, and team statistics, I aim to uncover 
+        interesting patterns and insights. Whether you're a cricket fan or just curious
+        about data analysis, I hope you'll find something fascinating here.
         ''')
 
     with col2:
