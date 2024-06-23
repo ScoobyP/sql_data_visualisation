@@ -22,7 +22,7 @@ if option_button == 'General Info':
         st.write('''
         Hello! Thank you for visiting my page. I'm excited to share with you my
         Mini IPL Analysis Project, where I dive into the world of the Indian Premier 
-        League (IPL) using data.
+        League (IPL) using data from Kaggle.
 
         A Simple Introduction to IPL
         

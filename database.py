@@ -119,7 +119,7 @@ class DB:
         SELECT bowler,
         SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) AS 'total_wickets'
         FROM (SELECT * FROM all_deliveries
-                       WHERE wicket_type
+                       WHERE innings < 3 AND wicket_type
                                  IN ('bowled', 'caught','caught and bowled','hit wicket','lbw','stumped')) a1
         GROUP BY bowler
         ORDER BY total_wickets DESC LIMIT 1
