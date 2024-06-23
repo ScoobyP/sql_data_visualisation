@@ -78,6 +78,22 @@ class DB:
         data = self.my_cursor.fetchone()
         return data[0]
 
+    def most_titles(self):
+        teams=[]
+        times=[]
+        self.my_cursor.execute('''
+                WITH table1 AS (SELECT winner, COUNT(*) as 'times_won' FROM ipl_OLAP.all_matches
+                WHERE match_type = 'Final'
+                GROUP BY winner)
+                SElECT winner, times_won FROM table1
+                WHERE times_won = (SELECT MAX(times_won) FROM table1);
+                ''')
+        data = self.my_cursor.fetchall()
+        for i in data:
+            teams.append(i[0])
+            times.append(i[1])
+        return teams, times
+
     def fetch_all_player_names(self):
         # Extracting all player names
 
