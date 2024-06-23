@@ -63,7 +63,7 @@ if option_button == 'General Info':
         p_df_teams = db.fetch_current_and_defunct_teams()
 
         st.plotly_chart(px.pie(db.matches_by_all_teams(), names= p_df_teams, values=matches))
-        st.text('*x* indicates defunct teams')
+        st.text('*+* indicates defunct teams')
 
         st.subheader('Number of Matches by Season')
         matches = go.Figure()

@@ -91,13 +91,48 @@ class DB:
         data = self.my_cursor.fetchall()
         for i in data:
             teams.append(str(i[0]))
-            times.append(f' ({str(i[1])})')
+            times.append(f' ({i[1]})')
 
         return pd.DataFrame({'Team': teams, 'Titles Won': times})
 
+    def most_runs(self):
+        name = []
+        runs = []
+        self.my_cursor.execute('''
+        SELECT striker,
+        SUM(runs_off_bat) AS 'total_runs'
+        FROM all_deliveries
+        WHERE innings < 3 
+        GROUP BY striker
+        ORDER BY total_runs DESC LIMIT 1
+        ''')
+        data = self.my_cursor.fetchall()
+        for i in data:
+            name.append(i[0])
+            runs.append(f' ({int(i[1])})')
+        return pd.DataFrame({'Name': name, 'Runs': runs})
+
+    def most_wickets(self):
+        name = []
+        wicks = []
+        self.my_cursor.execute('''
+        SELECT bowler,
+        SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) AS 'total_wickets'
+        FROM (SELECT * FROM all_deliveries
+                       WHERE wicket_type
+                                 IN ('bowled', 'caught','caught and bowled','hit wicket','lbw','stumped')) a1
+        GROUP BY bowler
+        ORDER BY total_wickets DESC LIMIT 1
+        ''')
+        data = self.my_cursor.fetchall()
+        for i in data:
+            name.append(i[0])
+            wicks.append(f' ({i[1]})')
+        return pd.DataFrame({'Name': name, 'Wickets': wicks})
+
     def front_index_table(self):
 
-        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': self.first_edition(), 'Latest Season: ': self.latest_edition(), 'Next Season: ': self.next_edition(), 'Number of Teams: ': self.num_of_current_teams(), 'Current Champion: ': self.current_champion(), 'Most Titles: ': self.most_titles().to_string(index=False, header=False)}, index=['Values'])
+        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': self.first_edition(), 'Latest Season: ': self.latest_edition(), 'Next Season: ': self.next_edition(), 'Number of Teams: ': self.num_of_current_teams(), 'Current Champion: ': self.current_champion(), 'Most Titles: ': self.most_titles().to_string(index=False, header=False), 'Most Runs': self.most_runs().to_string(index=False, header=False), 'Most Wickets': self.most_wickets().to_string(index=False, header=False)}, index=['Values'])
         return df.transpose()
 
     def fetch_all_player_names(self):
@@ -163,7 +198,7 @@ class DB:
         all_teams_pnp = []
         for team in self.matches_by_all_teams()[0]:
             if team not in current_teams:
-                all_teams_pnp.append(team + ' *X*')
+                all_teams_pnp.append(team + ' *+*')
             else:
                 all_teams_pnp.append(team)
 
