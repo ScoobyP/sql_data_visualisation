@@ -56,7 +56,7 @@ class DB:
         ORDER BY season DESC LIMIT 1) t1
         ''')
         data = self.my_cursor.fetchone()
-        return data[0]
+        return int(data[0])
 
     def num_of_current_teams(self):
 
@@ -90,10 +90,15 @@ class DB:
                 ''')
         data = self.my_cursor.fetchall()
         for i in data:
-            teams.append(i[0])
-            times.append(i[1])
-        df = pd.DataFrame({'Teams': teams, 'Times': times})
-        return df
+            teams.append(str(i[0]))
+            times.append(f' ({str(i[1])})')
+
+        return pd.DataFrame({'Team': teams, 'Titles Won': times})
+
+    def front_index_table(self):
+
+        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': self.first_edition(), 'Latest Season: ': self.latest_edition(), 'Next Season: ': self.next_edition(), 'Number of Teams: ': self.num_of_current_teams(), 'Current Champion: ': self.current_champion(), 'Most Titles: ': self.most_titles().to_string(index=False, header=False)}, index=['Values'])
+        return df.transpose()
 
     def fetch_all_player_names(self):
         # Extracting all player names

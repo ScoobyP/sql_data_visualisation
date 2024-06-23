@@ -31,17 +31,8 @@ if option_button == 'General Info':
 
     with col2:
         st.image("https://www.thestatesman.com/wp-content/uploads/2023/02/Untitled-design-2023-02-17T184545.299.jpg")
-        st.text('''
-        Match format: 20 Overs
-        First Season:   {0}
-        Latest Season:  {1}
-        Next Season:    {2}
-        Number of Teams: {3}
-        Current 
-        Champion: {4}
-        Most titles: {5}
-        '''.format(db.first_edition(), db.latest_edition(), db.latest_edition()))
-        st.table()
+        st.table(db.front_index_table())
+
     st.divider()
 
     exp1 = st.expander("IPL Matches' Stats")
