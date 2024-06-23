@@ -38,6 +38,13 @@ if option_button == 'General Info':
         match results, player performances, and team statistics, I aim to uncover 
         interesting patterns and insights. Whether you're a cricket fan or just curious
         about data analysis, I hope you'll find something fascinating here.
+        
+        A Peek Into Unveiling the Technical Magic
+        
+        I used Python along with libraries like pandas for data handling and Plotly
+        for creating the visualizations. SQL queries helped me fetch and process the 
+        data efficiently from my cloud database and lastly I deployed it using 
+        Streamlit.
         ''')
 
     with col2:
