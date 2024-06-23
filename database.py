@@ -109,7 +109,7 @@ class DB:
         data = self.my_cursor.fetchall()
         for i in data:
             name.append(i[0])
-            runs.append(f' ({int(i[1])})')
+            runs.append(f' ({str(round((i[1])))})')
         return pd.DataFrame({'Name': name, 'Runs': runs})
 
     def most_wickets(self):
@@ -126,7 +126,7 @@ class DB:
         ''')
         data = self.my_cursor.fetchall()
         for i in data:
-            name.append(i[0])
+            name.append(str(i[0]))
             wicks.append(f' ({i[1]})')
         return pd.DataFrame({'Name': name, 'Wickets': wicks})
 
@@ -380,6 +380,7 @@ class DB:
         pen = []
         self.my_cursor.execute('''
         SELECT SUM(penalty) AS 'total_penalty' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for i in data:
