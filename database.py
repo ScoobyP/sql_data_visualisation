@@ -276,6 +276,7 @@ class DB:
 
         self.my_cursor.execute('''
         SELECT SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         runs = self.my_cursor.fetchone()
         return int(runs[0])#
@@ -290,6 +291,7 @@ class DB:
         all_runs = []
         self.my_cursor.execute('''
         SELECT season,SUM(runs_off_bat),SUM(extras), SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries 
+        WHERE innings < 3
         GROUP BY season
         ''')
         data = self.my_cursor.fetchall()
@@ -308,7 +310,7 @@ class DB:
         sixes = []
         self.my_cursor.execute('''
         SELECT COUNT(*) FROM ipl_OLAP.all_deliveries
-        WHERE runs_off_bat = 6
+        WHERE runs_off_bat = 6 AND innings < 3
         ''')
         data = self.my_cursor.fetchall()
         for item in data:
@@ -323,7 +325,7 @@ class DB:
         fours = []
         self.my_cursor.execute('''
         SELECT COUNT(*) FROM ipl_OLAP.all_deliveries
-        WHERE runs_off_bat = 4
+        WHERE runs_off_bat = 4 AND innings < 3
                 ''')
         data = self.my_cursor.fetchall()
         for item in data:
@@ -340,10 +342,10 @@ class DB:
         fours = []
         self.my_cursor.execute('''
         SELECT t1.season, total_sixes, total_fours FROM (SELECT season, COUNT(runs_off_bat) AS 'total_sixes' FROM ipl_OLAP.all_deliveries
-        WHERE runs_off_bat = 6
+        WHERE runs_off_bat = 6 AND innings < 3
         GROUP BY season) t1
         JOIN (SELECT season, COUNT(runs_off_bat) AS 'total_fours' FROM ipl_OLAP.all_deliveries
-        WHERE runs_off_bat = 4
+        WHERE runs_off_bat = 4 AND innings < 3
         GROUP BY season) t2
         ON t1.season = t2.season
         ORDER BY t1.season
@@ -363,6 +365,7 @@ class DB:
         balls_thrown = []
         self.my_cursor.execute('''
         SELECT COUNT(ball) FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
                 ''')
         data = self.my_cursor.fetchall()
         for item in data:
@@ -392,7 +395,7 @@ class DB:
         total_wickets = []
         self.my_cursor.execute('''
         SELECT season, wicket_type, COUNT(wicket_type) AS 'total_wickets' FROM ipl_OLAP.all_deliveries
-        WHERE wicket_type != ''
+        WHERE wicket_type != '' AND innings < 3
         GROUP BY season, wicket_type''')
         data = self.my_cursor.fetchall()
         for item in data:
@@ -417,6 +420,7 @@ class DB:
         self.my_cursor.execute('''
         SELECT season, SUM(wides), SUM(noballs), SUM(byes), SUM(legbyes), SUM(penalty)
         FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         GROUP BY season
         ''')
         data = self.my_cursor.fetchall()
@@ -439,6 +443,7 @@ class DB:
         all_wides = []
         self.my_cursor.execute('''
         SELECT SUM(wides) AS 'wides' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for item in data:
@@ -453,6 +458,7 @@ class DB:
         all_noballs = []
         self.my_cursor.execute('''
         SELECT SUM(noballs) AS 'no_balls' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for item in data:
@@ -467,6 +473,7 @@ class DB:
         all_extras = []
         self.my_cursor.execute('''
         SELECT SUM(extras) AS 'extras' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for item in data:
@@ -481,6 +488,7 @@ class DB:
         all_byes = []
         self.my_cursor.execute('''
         SELECT SUM(byes) AS 'byes' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for item in data:
@@ -495,6 +503,7 @@ class DB:
         all_legbyes = []
         self.my_cursor.execute('''
         SELECT SUM(legbyes) AS 'legbyes' FROM ipl_OLAP.all_deliveries
+        WHERE innings < 3
         ''')
         data = self.my_cursor.fetchone()
         for item in data:
@@ -508,7 +517,7 @@ class DB:
     def total_wickets(self):
         self.my_cursor.execute('''
         SELECT COUNT(wicket_type) FROM ipl_OLAP.all_deliveries
-        WHERE wicket_type != ''
+        WHERE wicket_type != '' AND innings < 3
         ''')
         data = self.my_cursor.fetchone()
         return data[0]
