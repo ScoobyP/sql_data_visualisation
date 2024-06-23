@@ -58,6 +58,26 @@ class DB:
         data = self.my_cursor.fetchone()
         return data[0]
 
+    def num_of_current_teams(self):
+
+        self.my_cursor.execute('''
+                SELECT COUNT(DISTINCT all_deliveries.batting_team) AS 'num_teams'
+                FROM all_deliveries
+                WHERE season = (SELECT MAX(season) FROM all_deliveries);
+                ''')
+        data = self.my_cursor.fetchone()
+        return data[0]
+
+    def current_champion(self):
+
+        self.my_cursor.execute('''
+                SELECT winner FROM all_matches
+                WHERE season = (SELECT MAX(season) FROM all_matches) AND
+                                match_type = 'Final';
+                ''')
+        data = self.my_cursor.fetchone()
+        return data[0]
+
     def fetch_all_player_names(self):
         # Extracting all player names
 
