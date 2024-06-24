@@ -167,6 +167,12 @@ if option_button == 'General Info':
         extras_fig.update_layout(xaxis=dict(type='category'))
         st.plotly_chart(extras_fig)
 
+        st.subheader("Purple Cap Holder by Season")
+        st.write("Purple Cap holder in an IPL tournament is the player with the most wickets in the entire season")
+
+        p_cap = db.purple_cap_by_season()
+        st.plotly_chart(px.scatter(p_cap, x=p_cap['Season'], y=p_cap['Wickets'], color=p_cap['Name'], size=p_cap['Wickets'].astype(int), size_max=30).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending')))
+
 elif option_button == 'Team Record':
     st.header("IPL Team Record")
     st.divider()

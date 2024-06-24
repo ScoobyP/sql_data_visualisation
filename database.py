@@ -461,7 +461,31 @@ class DB:
         df1 = df.sort_values(by='Season')
         return df1
 
-    
+    def purple_cap_by_season(self):
+        s = []
+        n = []
+        w = []
+        self.my_cursor.execute('''
+                SELECT season, bowler, total_wickets 
+                FROM  (SELECT season,bowler,
+                       SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) AS 'total_wickets',
+                       ROW_NUMBER() over (PARTITION BY season ORDER BY SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) DESC ) AS 'row_num'
+                FROM (SELECT * FROM all_deliveries
+                               WHERE innings < 3 AND
+                                     wicket_type
+                                         IN ('bowled', 'caught','caught and bowled','hit wicket','lbw','stumped')) a1
+                GROUP BY season, bowler
+                ORDER BY season ASC, total_wickets DESC) k1
+                WHERE row_num = 1
+
+                ''')
+        data = self.my_cursor.fetchall()
+        for item in data:
+            s.append(item[0])
+            n.append(item[1])
+            w.append(item[2])
+        df = pd.DataFrame({'Season': s, 'Name': n, 'Wickets': w})
+        return df
 
 
     def total_wides(self):
