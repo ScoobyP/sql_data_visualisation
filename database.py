@@ -10,21 +10,21 @@ class DB:
     def __init__(self):
         try:
             load_dotenv()
-            self.mydb = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password='',
-                port='3306',
-                database='ipl_OLAP'
-            )
             #self.mydb = mysql.connector.connect(
-                 #host=os.getenv("aiven_url1"),
-                 #user=os.getenv("aiven_user_name"),
-                 #password=os.getenv("aiven_user_pass"),
-                 #port=os.getenv("aiven_port"),
-                 #database=os.getenv("aiven_db2")
+                #host=,
+                #user='',
+                #password='',
+                #port='',
+                #database=''
+            #)
+            self.mydb = mysql.connector.connect(
+                 host=os.getenv("aiven_url1"),
+                 user=os.getenv("aiven_user_name"),
+                 password=os.getenv("aiven_user_pass"),
+                 port=os.getenv("aiven_port"),
+                 database=os.getenv("aiven_db2")
 
-             #)
+             )
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
