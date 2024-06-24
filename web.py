@@ -114,6 +114,12 @@ if option_button == 'General Info':
         boundary_fig.update_layout(xaxis=dict(type='category'))
         st.plotly_chart(boundary_fig)
 
+
+        o_cap = db.orange_cap_by_season()
+        st.subheader("Orange Cap Holder  by Season")
+        st.write("Orange Cap holder in an IPL tournament is the player with highest runs scored in the entire season")
+        st.plotly_chart(px.scatter(o_cap, x=o_cap['Season'], y= o_cap['Runs'], color=o_cap['Name']).update_traces(marker=dict(size=15, symbol='triangle-up')).update_layout(xaxis=dict(type='category',categoryorder= 'category ascending') ))
+
     st.divider()
 
     exp3 = st.expander("IPL Bowling Stats")

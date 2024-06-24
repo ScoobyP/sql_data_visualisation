@@ -10,21 +10,21 @@ class DB:
     def __init__(self):
         try:
             load_dotenv()
-            #self.mydb = mysql.connector.connect(
-                #host='',
-                #user='',
-                #password='',
-                #port='',
-                #database=''
-            #)
             self.mydb = mysql.connector.connect(
-                 host=os.getenv("aiven_url1"),
-                 user=os.getenv("aiven_user_name"),
-                 password=os.getenv("aiven_user_pass"),
-                 port=os.getenv("aiven_port"),
-                 database=os.getenv("aiven_db2")
+                host='localhost',
+                user='root',
+                password='',
+                port='3306',
+                database='ipl_OLAP'
+            )
+            #self.mydb = mysql.connector.connect(
+                 #host=os.getenv("aiven_url1"),
+                 #user=os.getenv("aiven_user_name"),
+                 #password=os.getenv("aiven_user_pass"),
+                 #port=os.getenv("aiven_port"),
+                 #database=os.getenv("aiven_db2")
 
-             )
+             #)
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -301,6 +301,30 @@ class DB:
             run_extras.append(i[2])
             all_runs.append(i[3])
         df= pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
+        return df
+
+    def orange_cap_by_season(self):
+        s = []
+        n = []
+        r = []
+        self.my_cursor.execute('''
+                SELECT season, striker, runs FROM (SELECT season,
+                striker,
+                SUM(runs_off_bat) AS 'runs',
+                ROW_NUMBER() over (PARTITION BY season ORDER BY SUM(runs_off_bat) DESC) AS 'row_num'
+                FROM all_deliveries
+                WHERE innings < 3
+                GROUP BY season,striker
+                ORDER BY season,runs DESC) a1
+                WHERE row_num = 1
+                
+                ''')
+        data = self.my_cursor.fetchall()
+        for item in data:
+            s.append(item[0])
+            n.append(item[1])
+            r.append(item[2])
+        df = pd.DataFrame({'Season': s, 'Name': n, 'Runs': r})
         return df
 
     
