@@ -2,6 +2,7 @@ import streamlit as st
 from database import DB
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
 
 db=DB()
@@ -79,6 +80,9 @@ if option_button == 'General Info':
 
         st.plotly_chart(matches_in_cities)
 
+        st.subheader("Matches by Month per Season")
+
+
     st.divider()
 
     exp2 = st.expander("IPL Batting Stats")
@@ -120,9 +124,23 @@ if option_button == 'General Info':
         st.write("Orange Cap holder in an IPL tournament is the player with highest runs scored in the entire season")
         st.plotly_chart(px.scatter(o_cap, x=o_cap['Season'], y= o_cap['Runs'], color=o_cap['Name']).update_traces(marker=dict(size=25, symbol='triangle-up')).update_layout(xaxis=dict(type='category',categoryorder= 'category ascending') ))
 
+        st.subheader("Fifties and Centuries by Season")
+
+        cen = db.num_centuries_by_season()
+        fif = db.num_fifties_by_season()
+        tot = db.total_fifties_centuries()
+        all_ies = go.Figure()
+        all_ies.add_trace(go.Scatter(x=cen['Season'], y=cen['Centuries'].astype(int), name='Centuries', mode='markers'))
+        all_ies.add_trace(go.Scatter(x=fif['Season'], y=fif['Fifties'].astype(int), name='Fifties', mode='lines+markers')).update_traces(marker=dict(size = 15, symbol='diamond'))
+        all_ies.add_trace(go.Bar(x = tot['Season'], y= tot['Total'], name='Total'))
+
+        all_ies.update_layout(xaxis=dict(type='category'))
+        st.plotly_chart(all_ies)
+
     st.divider()
 
     exp3 = st.expander("IPL Bowling Stats")
+
     with exp3:
 
         st.subheader('All Wickets by Season')
@@ -171,7 +189,7 @@ if option_button == 'General Info':
         st.write("Purple Cap holder in an IPL tournament is the player with the most wickets in the entire season")
 
         p_cap = db.purple_cap_by_season()
-        st.plotly_chart(px.scatter(p_cap, x=p_cap['Season'], y=p_cap['Wickets'], color=p_cap['Name'], size=p_cap['Wickets'].astype(int), size_max=30).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending')))
+        st.plotly_chart(px.scatter(p_cap, x=p_cap['Season'], y=p_cap['Wickets'], color=p_cap['Name'], size=p_cap['Wickets'].astype(int), size_max=25).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending')))
 
 elif option_button == 'Team Record':
     st.header("IPL Team Record")

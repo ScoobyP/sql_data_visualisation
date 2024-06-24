@@ -269,7 +269,8 @@ class DB:
 
         return sorted(season), num_matches
 
-    
+    def matches_month_timeline(self):
+        pass
 
 
     def total_ipl_runs(self):
@@ -382,8 +383,41 @@ class DB:
 
         return season, sixes, fours
 
+    def num_centuries_by_season(self):
+        s = []
+        cen = []
+        self.my_cursor.execute('''
+        SELECT season, COUNT(striker) AS 'num_100' FROM (SELECT season, striker, SUM(runs_off_bat) AS 'total_runs' FROM all_deliveries
+        GROUP BY season, match_id, striker
+        HAVING total_runs > 99) a1
+        GROUP BY season
+         ''')
+        data = self.my_cursor.fetchall()
+        for item in data:
+            s.append(item[0])
+            cen.append(item[1])
+        df = pd.DataFrame({'Season': s, 'Centuries': cen})
+        return df.sort_values(by='Season')
     
+    def num_fifties_by_season(self):
+        s = []
+        fif = []
+        self.my_cursor.execute('''
+        SELECT season, COUNT(striker) AS 'num_100' FROM (SELECT season, striker, SUM(runs_off_bat) AS 'total_runs' FROM all_deliveries
+        GROUP BY season, match_id, striker
+        HAVING total_runs BETWEEN 49 AND 99) a1
+        GROUP BY season
+         ''')
+        data = self.my_cursor.fetchall()
+        for item in data:
+            s.append(item[0])
+            fif.append(item[1])
+        df = pd.DataFrame({'Season': s, 'Fifties': fif})
+        return df.sort_values(by='Season')
 
+    def total_fifties_centuries(self):
+        df = pd.DataFrame({'Season': self.num_fifties_by_season()['Season'], 'Total': self.num_fifties_by_season()['Fifties']+self.num_centuries_by_season()['Centuries']})
+        return df.sort_values(by='Season')
 
     def total_balls_thrown(self):
         balls_thrown = []
