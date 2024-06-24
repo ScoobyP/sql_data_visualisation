@@ -129,6 +129,12 @@ if option_button == 'General Info':
         cen = db.num_centuries_by_season()
         fif = db.num_fifties_by_season()
         tot = db.total_fifties_centuries()
+
+        c1,c2 = st.columns(2)
+        with c1:
+            st.subheader(f"Total Fifties: {sum(fif['Fifties'])}")
+        with c2:
+            st.subheader(f"Total Centuries: {sum(cen['Centuries'])}")
         all_ies = go.Figure()
         all_ies.add_trace(go.Scatter(x=cen['Season'], y=cen['Centuries'].astype(int), name='Centuries', mode='markers'))
         all_ies.add_trace(go.Scatter(x=fif['Season'], y=fif['Fifties'].astype(int), name='Fifties', mode='lines+markers')).update_traces(marker=dict(size = 15, symbol='diamond'))
