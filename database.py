@@ -30,6 +30,16 @@ class DB:
         except Exception as e:
             print(f'Connection Error: {e}')
 
+    # Front Table START
+
+    @st.cache_data
+    def total_matches(_self):
+        _self.my_cursor.execute('''
+        SELECT COUNT(DISTINCT match_id) AS 'all_matches' FROM ipl_OLAP.all_deliveries
+        ''')
+        data = _self.my_cursor.fetchone()
+        return data[0]
+
     def first_edition(self):
         self.my_cursor.execute('''
         SELECT season FROM all_deliveries
@@ -130,10 +140,13 @@ class DB:
             wicks.append(f' ({i[1]})')
         return pd.DataFrame({'Name': name, 'Wickets': wicks})
 
-    def front_index_table(self):
+    @st.cache_data
+    def front_index_table(_self):
 
-        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': self.first_edition(), 'Latest Season: ': self.latest_edition(), 'Next Season: ': self.next_edition(), 'Number of Teams: ': self.num_of_current_teams(), 'Current Champion: ': self.current_champion(), 'Most Titles: ': self.most_titles().to_string(index=False, header=False), 'Most Runs': self.most_runs().to_string(index=False, header=False), 'Most Wickets': self.most_wickets().to_string(index=False, header=False)}, index=['Values'])
+        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': _self.first_edition(), 'Latest Season: ': _self.latest_edition(), 'Next Season: ': _self.next_edition(), 'Number of Teams: ': _self.num_of_current_teams(), 'Current Champion: ': _self.current_champion(), 'Most Titles: ': _self.most_titles().to_string(index=False, header=False), 'Most Runs': _self.most_runs().to_string(index=False, header=False), 'Most Wickets': _self.most_wickets().to_string(index=False, header=False)}, index=['Values'])
         return df.transpose()
+
+    # Front Table END
 
     def fetch_all_player_names(self):
         # Extracting all player names
@@ -173,7 +186,7 @@ class DB:
         return ipl_teams
 
     
-
+    # IPL Matches' Stats START
 
     def fetch_current_teams(self):
         current_teams = []
@@ -192,11 +205,11 @@ class DB:
 
     
 
-
-    def fetch_current_and_defunct_teams(self):
-        current_teams = self.fetch_current_teams()
+    @st.cache_data
+    def fetch_current_and_defunct_teams(_self):
+        current_teams = _self.fetch_current_teams()
         all_teams_pnp = []
-        for team in self.matches_by_all_teams()[0]:
+        for team in _self.matches_by_all_teams()[0]:
             if team not in current_teams:
                 all_teams_pnp.append(team + ' *+*')
             else:
@@ -206,11 +219,11 @@ class DB:
 
     
 
-
-    def matches_by_all_teams(self):
+    @st.cache_data
+    def matches_by_all_teams(_self):
         teams = []
         matches = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         WITH big_table AS (SELECT A1.batting_team, matches_played, matches FROM (SELECT batting_team, COUNT(DISTINCT match_id) AS 'matches_played' FROM ipl_OLAP.all_deliveries
         GROUP BY batting_team) A1
         JOIN 
@@ -220,7 +233,7 @@ class DB:
         
         SELECT batting_team, GREATEST(matches_played, matches) AS 'total_played' FROM big_table
         ''')
-        no_of_matches = self.my_cursor.fetchall()
+        no_of_matches = _self.my_cursor.fetchall()
         for item in no_of_matches:
             teams.append(item[0])
             matches.append(item[1])
@@ -229,20 +242,20 @@ class DB:
 
     
 
-
-    def fetch_cities_played_in(self):
+    @st.cache_data
+    def fetch_cities_played_in(_self):
         season = []
         city = []
         num_mat = []
 
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, 
         city,
         COUNT(city) AS 'num_matches'
         FROM ipl_OLAP.all_matches
         GROUP BY season, city
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for i in data:
             season.append(i[0])
             city.append(i[1])
@@ -254,15 +267,15 @@ class DB:
 
     
 
-
-    def fetch_matches_by_season(self):
+    @st.cache_data
+    def fetch_matches_by_season(_self):
         num_matches = []
         season = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, COUNT(*) AS 'num_matches' FROM ipl_OLAP.all_matches
         GROUP BY season
         ''')
-        data= self.my_cursor.fetchall()
+        data= _self.my_cursor.fetchall()
         for i in data:
             season.append(i[0])
             num_matches.append(i[1])
@@ -272,30 +285,32 @@ class DB:
     def matches_month_timeline(self):
         pass
 
+    # IPL Matches' Stats END
 
-    def total_ipl_runs(self):
+    # IPL Batting Stats START
+    @st.cache_data
+    def total_ipl_runs(_self):
 
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        runs = self.my_cursor.fetchone()
+        runs = _self.my_cursor.fetchone()
         return int(runs[0])#
 
     
-
-
-    def total_runs(self):
+    @st.cache_data
+    def total_runs(_self):
         s = []
         run_scored= []
         run_extras = []
         all_runs = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season,SUM(runs_off_bat),SUM(extras), SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries 
         WHERE innings < 3
         GROUP BY season
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for i in data:
             s.append(i[0])
             run_scored.append(i[1])
@@ -304,11 +319,12 @@ class DB:
         df= pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
         return df
 
-    def orange_cap_by_season(self):
+    @st.cache_data
+    def orange_cap_by_season(_self):
         s = []
         n = []
         r = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
                 SELECT season, striker, runs FROM (SELECT season,
                 striker,
                 SUM(runs_off_bat) AS 'runs',
@@ -320,7 +336,7 @@ class DB:
                 WHERE row_num = 1
                 
                 ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             s.append(item[0])
             n.append(item[1])
@@ -330,14 +346,14 @@ class DB:
 
     
 
-
-    def total_six(self):
+    @st.cache_data
+    def total_six(_self):
         sixes = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT COUNT(*) FROM ipl_OLAP.all_deliveries
         WHERE runs_off_bat = 6 AND innings < 3
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             sixes.append(item)
 
@@ -345,14 +361,14 @@ class DB:
 
     
 
-
-    def total_fours(self):
+    @st.cache_data
+    def total_fours(_self):
         fours = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT COUNT(*) FROM ipl_OLAP.all_deliveries
         WHERE runs_off_bat = 4 AND innings < 3
                 ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             fours.append(item)
 
@@ -360,12 +376,12 @@ class DB:
 
     
 
-
-    def total_boundaries_by_season(self):
+    @st.cache_data
+    def total_boundaries_by_season(_self):
         season = []
         sixes = []
         fours = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT t1.season, total_sixes, total_fours FROM (SELECT season, COUNT(runs_off_bat) AS 'total_sixes' FROM ipl_OLAP.all_deliveries
         WHERE runs_off_bat = 6 AND innings < 3
         GROUP BY season) t1
@@ -375,7 +391,7 @@ class DB:
         ON t1.season = t2.season
         ORDER BY t1.season
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
             sixes.append(item[1])
@@ -383,42 +399,48 @@ class DB:
 
         return season, sixes, fours
 
-    def num_centuries_by_season(self):
+    @st.cache_data
+    def num_centuries_by_season(_self):
         s = []
         cen = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, COUNT(striker) AS 'num_100' FROM (SELECT season, striker, SUM(runs_off_bat) AS 'total_runs' FROM all_deliveries
         GROUP BY season, match_id, striker
         HAVING total_runs > 99) a1
         GROUP BY season
          ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             s.append(item[0])
             cen.append(item[1])
         df = pd.DataFrame({'Season': s, 'Centuries': cen})
         return df.sort_values(by='Season')
-    
-    def num_fifties_by_season(self):
+
+    @st.cache_data
+    def num_fifties_by_season(_self):
         s = []
         fif = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, COUNT(striker) AS 'num_100' FROM (SELECT season, striker, SUM(runs_off_bat) AS 'total_runs' FROM all_deliveries
         GROUP BY season, match_id, striker
         HAVING total_runs BETWEEN 49 AND 99) a1
         GROUP BY season
          ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             s.append(item[0])
             fif.append(item[1])
         df = pd.DataFrame({'Season': s, 'Fifties': fif})
         return df.sort_values(by='Season')
 
-    def total_fifties_centuries(self):
-        df = pd.DataFrame({'Season': self.num_fifties_by_season()['Season'], 'Total': self.num_fifties_by_season()['Fifties']+self.num_centuries_by_season()['Centuries']})
+    @st.cache_data
+    def total_fifties_centuries(_self):
+        df = pd.DataFrame({'Season': _self.num_fifties_by_season()['Season'], 'Total': _self.num_fifties_by_season()['Fifties']+_self.num_centuries_by_season()['Centuries']})
         return df.sort_values(by='Season')
 
+    # IPL Batting Stats END
+
+    # IPL Bowling Stats START
     def total_balls_thrown(self):
         balls_thrown = []
         self.my_cursor.execute('''
@@ -433,30 +455,30 @@ class DB:
 
     
 
-
-    def total_penalty(self):
+    @st.cache_data
+    def total_penalty(_self):
         pen = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(penalty) AS 'total_penalty' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for i in data:
             pen.append(int(i))
         return pen[0]
 
     
 
-
-    def total_wickets_by_category_by_season(self):
+    @st.cache_data
+    def total_wickets_by_category_by_season(_self):
         season = []
         wickets_category = []
         total_wickets = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, wicket_type, COUNT(wicket_type) AS 'total_wickets' FROM ipl_OLAP.all_deliveries
         WHERE wicket_type != '' AND innings < 3
         GROUP BY season, wicket_type''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
             wickets_category.append(item[1])
@@ -468,21 +490,21 @@ class DB:
 
     
 
-
-    def all_extras_by_category_season(self):
+    @st.cache_data
+    def all_extras_by_category_season(_self):
         season = []
         wides = []
         noballs = []
         penalty = []
         byes = []
         legbyes = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, SUM(wides), SUM(noballs), SUM(byes), SUM(legbyes), SUM(penalty)
         FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         GROUP BY season
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
             wides.append(item[1])
@@ -495,11 +517,12 @@ class DB:
         df1 = df.sort_values(by='Season')
         return df1
 
-    def purple_cap_by_season(self):
+    @st.cache_data
+    def purple_cap_by_season(_self):
         s = []
         n = []
         w = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
                 SELECT season, bowler, total_wickets 
                 FROM  (SELECT season,bowler,
                        SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) AS 'total_wickets',
@@ -513,7 +536,7 @@ class DB:
                 WHERE row_num = 1
 
                 ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for item in data:
             s.append(item[0])
             n.append(item[1])
@@ -522,13 +545,14 @@ class DB:
         return df
 
 
-    def total_wides(self):
+    @st.cache_data
+    def total_wides(_self):
         all_wides = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(wides) AS 'wides' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for item in data:
             all_wides.append(int(item))
 
@@ -536,14 +560,14 @@ class DB:
 
     
 
-
-    def total_noballs(self):
+    @st.cache_data
+    def total_noballs(_self):
         all_noballs = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(noballs) AS 'no_balls' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for item in data:
             all_noballs.append(int(item))
 
@@ -551,14 +575,14 @@ class DB:
 
     
 
-
-    def total_extras(self):
+    @st.cache_data
+    def total_extras(_self):
         all_extras = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(extras) AS 'extras' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for item in data:
             all_extras.append(int(item))
 
@@ -566,14 +590,14 @@ class DB:
 
     
 
-
-    def total_byes(self):
+    @st.cache_data
+    def total_byes(_self):
         all_byes = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(byes) AS 'byes' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for item in data:
             all_byes.append(int(item))
 
@@ -581,14 +605,14 @@ class DB:
 
     
 
-
-    def total_legbyes(self):
+    @st.cache_data
+    def total_legbyes(_self):
         all_legbyes = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT SUM(legbyes) AS 'legbyes' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         for item in data:
             all_legbyes.append(int(item))
 
@@ -596,24 +620,19 @@ class DB:
 
     
 
-
-    def total_wickets(self):
-        self.my_cursor.execute('''
+    @st.cache_data
+    def total_wickets(_self):
+        _self.my_cursor.execute('''
         SELECT COUNT(wicket_type) FROM ipl_OLAP.all_deliveries
         WHERE wicket_type != '' AND innings < 3
         ''')
-        data = self.my_cursor.fetchone()
+        data = _self.my_cursor.fetchone()
         return data[0]
 
     
+# IPL Bowling Stats END
 
 
-    def total_matches(self):
-        self.my_cursor.execute('''
-        SELECT COUNT(DISTINCT match_id) AS 'all_matches' FROM ipl_OLAP.all_deliveries
-        ''')
-        data = self.my_cursor.fetchone()
-        return data[0]
 
     
 
