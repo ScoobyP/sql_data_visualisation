@@ -83,7 +83,6 @@ if option_button == 'General Info':
 
             st.plotly_chart(matches_in_cities)
 
-            st.subheader("Matches by Month per Season")
 
     st.divider()
 
