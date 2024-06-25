@@ -5,26 +5,28 @@ import pandas as pd
 import os
 
 
+
 class DB:
 
     def __init__(self):
+
         try:
             load_dotenv()
-            #self.mydb = mysql.connector.connect(
-                #host='',
-                #user='',
-                #password='',
-                #port='',
-                #database=''
-            #)
             self.mydb = mysql.connector.connect(
-                 host=os.getenv("aiven_url1"),
-                 user=os.getenv("aiven_user_name"),
-                 password=os.getenv("aiven_user_pass"),
-                 port=os.getenv("aiven_port"),
-                 database=os.getenv("aiven_db2")
+                host='localhost',
+                user='root',
+             password='',
+                port='3306',
+                database='ipl_OLAP'
+            )
+            #self.mydb = mysql.connector.connect(
+                 #host=os.getenv("aiven_url1"),
+                 #user=os.getenv("aiven_user_name"),
+                 #password=os.getenv("aiven_user_pass"),
+                 #port=os.getenv("aiven_port"),
+                 #database=os.getenv("aiven_db2")
 
-             )
+             #)
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -632,7 +634,75 @@ class DB:
     
 # IPL Bowling Stats END
 
+# TEAM stats START
 
+    st.cache_data
+    def teams_table(_self, team):
+        team_name = team
+
+        if team_name in _self.fetch_current_teams():
+            status = 'Active'
+        else:
+            status = "Defunct *-*"
+
+        _self.my_cursor.execute('''
+                                SELECT COUNT(*) as matches_played FROM all_matches
+                                WHERE team1 = %s OR team2 = %s
+                                ''', (team_name, team_name))
+        against = _self.my_cursor.fetchone()[0]
+
+        _self.my_cursor.execute('''
+                                        SELECT COUNT(*) as matches_played FROM all_matches
+                                        WHERE winner LIKE %s
+                                        ''', (team_name,))
+        won = _self.my_cursor.fetchone()[0]
+
+        _self.my_cursor.execute('''
+                                                SELECT COUNT(*) as titles FROM all_matches
+                                                WHERE winner LIKE %s AND match_type = 'Final'
+                                                ''', (team_name,))
+        titles = _self.my_cursor.fetchone()[0]
+
+        _self.my_cursor.execute('''
+        SELECT MIN(all_matches.season) FROM ipl_OLAP.all_matches
+        WHERE team1 = %s OR team2 = %s;
+                                     ''',(team_name,team_name))
+        first_season = _self.my_cursor.fetchone()[0]
+
+        _self.my_cursor.execute('''
+                SELECT team2, against
+                FROM (SELECT a1.team2,
+                       SUM(num_match) AS 'against',
+                       DENSE_RANK() over (ORDER BY SUM(num_match) DESC) AS 'rank'
+                FROM (SELECT team2, COUNT(team2) AS 'num_match' FROM ipl_OLAP.all_matches
+                WHERE team1 = %s
+                GROUP BY team2
+                UNION ALL
+                SELECT team1, COUNT(team2) FROM ipl_OLAP.all_matches
+                WHERE team2 = %s
+                GROUP BY team1) a1
+                GROUP BY a1.team2) b1
+                WHERE b1.rank = 1
+                                             ''', (team_name, team_name))
+        most_against = _self.my_cursor.fetchone()
+
+        # because I don't know why
+        _self.my_cursor.fetchall()
+
+        _self.my_cursor.execute('''
+                                SELECT  COUNT(*) FROM ipl_OLAP.all_matches
+                                WHERE winner = %s AND toss_decision = 'bat'
+                                                        ''', (team_name,))
+        won_bat = _self.my_cursor.fetchone()[0]
+
+        _self.my_cursor.execute('''
+                                SELECT  COUNT(*) FROM ipl_OLAP.all_matches
+                                WHERE winner = %s AND toss_decision = 'field'
+                                                ''', (team_name,))
+        won_field = _self.my_cursor.fetchone()[0]
+
+        df = pd.DataFrame({'Team Status': status,'First Season': first_season,'Matches Played': against, 'Most Against': f"{most_against[0]} ({most_against[1]})" ,'Won': won,  'Lost': against-won,'Won by Batting First': won_bat,'Won by Fielding First': won_field ,'Win %': f'{round(float(won/against*100),2)} %', 'Titles Won': titles}, index=['Value'])
+        return df.transpose()
 
     
 

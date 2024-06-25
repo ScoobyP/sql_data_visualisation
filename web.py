@@ -206,8 +206,15 @@ elif option_button == 'Team Record':
     st.divider()
 
     all_team_names = db.fetch_all_teams()
-    st.selectbox('Select a team', sorted(all_team_names))
-    st.subheader('Work in Progress....')
+    t1 = st.selectbox('Select a team', sorted(all_team_names))
+    b1 = st.button("Show Team Record")
+
+    if b1:
+        c1,c2, c3 = st.columns([1,2,1])
+        with c2:
+            st.header(f'{t1}')
+            st.table(db.teams_table(t1))
+
 
 elif option_button == 'Batsman Record':
     st.header("IPL Batsman Record")
