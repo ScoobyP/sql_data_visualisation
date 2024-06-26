@@ -13,20 +13,20 @@ class DB:
         try:
             load_dotenv()
             self.mydb = mysql.connector.connect(
-                #host='',
-                #user='',
-                #password='',
-                #port='',
-                #database=''
+                host='localhost',
+                user='root',
+                password='',
+                port='3306',
+                database='ipl_OLAP'
             )
-            self.mydb = mysql.connector.connect(
-                 host=os.getenv("aiven_url1"),
-                 user=os.getenv("aiven_user_name"),
-                 password=os.getenv("aiven_user_pass"),
-                 port=os.getenv("aiven_port"),
-                 database=os.getenv("aiven_db2")
+            #self.mydb = mysql.connector.connect(
+                 #host=os.getenv("aiven_url1"),
+                 #user=os.getenv("aiven_user_name"),
+                 #password=os.getenv("aiven_user_pass"),
+                 #port=os.getenv("aiven_port"),
+                 #database=os.getenv("aiven_db2")
 
-             )
+             #)
             self.my_cursor = self.mydb.cursor()
             print('Connection Established')
         except Exception as e:
@@ -704,7 +704,56 @@ class DB:
         df = pd.DataFrame({'Team Status': status,'First Season': first_season,'Matches Played': against, 'Most Against': f"{most_against[0]} ({most_against[1]})" ,'Won': won,  'Lost': against-won,'Won by Batting First': won_bat,'Won by Fielding First': won_field ,'Win %': f'{round(float(won/against*100),2)} %', 'Titles Won': titles}, index=['Value'])
         return df.transpose()
 
-    
+    @st.cache_data
+    def matches_won_lost(_self, team_name):
+        query = '''
+        WITH bigtable1 AS (SELECT a1.toss_decision, won, lost FROM (SELECT toss_decision,COUNT(*) AS 'lost' FROM ipl_OLAP.all_matches
+        WHERE (team1 = %s OR team2 = %s ) AND winner != %s
+        GROUP BY toss_decision
+        ) a1
+        LEFT JOIN
+        (SELECT  toss_decision, COUNT(*) AS 'won' FROM ipl_OLAP.all_matches
+        WHERE (team1 = %s OR team2 = %s ) AND winner = %s
+        GROUP BY toss_decision) a2
+        ON a1.toss_decision = a2.toss_decision
+        UNION
+        SELECT a1.toss_decision, won, lost FROM (SELECT toss_decision, COUNT(*) AS 'lost' FROM ipl_OLAP.all_matches
+        WHERE (team1 = %s OR team2 = %s ) AND winner != %s
+        GROUP BY toss_decision) a1
+        RIGHT JOIN
+        (SELECT  toss_decision, COUNT(*) AS 'won' FROM ipl_OLAP.all_matches
+        WHERE (team1 = %s OR team2 = %s ) AND winner = %s
+        GROUP BY toss_decision) a2
+        ON a1.toss_decision = a2.toss_decision)
+        
+        SELECT toss_decision, IF(won IS NULL, 0, won) AS _won, IF(lost IS NULL, 0 , lost) AS _lost FROM bigtable1;
+        '''
+
+        df = pd.read_sql(query, _self.mydb, params=(team_name, team_name, team_name, team_name, team_name,team_name,team_name,team_name,team_name,team_name,team_name,team_name,))
+        return df.sort_values(by = 'toss_decision')
+
+    def team_match_by_season(self, team):
+        query= '''
+        SELECT season, COUNT(*) AS 'num' FROM ipl_OLAP.all_matches
+        WHERE team1=%s OR team2=%s
+        GROUP BY season;
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team, team))
+        return df.sort_values(by='season')
+
+    def match_wonloss_by_season(self, team):
+        query = '''
+        SELECT a1.season, won, lost FROM (SELECT season, COUNT(*) AS 'won' FROM ipl_OLAP.all_matches
+        WHERE winner = %s
+        GROUP BY season) a1
+        JOIN
+        (SELECT season, COUNT(*) AS 'lost' FROM ipl_OLAP.all_matches
+        WHERE (team1 = %s OR team2 = %s) AND winner != %s
+        GROUP BY season) a2
+        ON a1.season = a2.season;
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
+        return df
 
 
     def all_batsman_names(self):

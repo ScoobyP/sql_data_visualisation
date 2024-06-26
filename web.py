@@ -214,6 +214,27 @@ elif option_button == 'Team Record':
             st.header(f'{t1}')
             st.table(db.teams_table(t1))
 
+        exp_p2_1 = st.expander("Show Win Loss Stats", expanded=False)
+        with exp_p2_1:
+            st.subheader('Comparison by Batting First and Fielding First')
+            match_fig = go.Figure()
+            team_wonloss = db.matches_won_lost(t1)
+            match_fig.add_trace(go.Bar(x = team_wonloss['toss_decision'], y = team_wonloss['_won'], name= 'Won'))
+            match_fig.add_trace(go.Bar(x=team_wonloss['toss_decision'], y=team_wonloss['_lost'], name = 'Lost'))
+            st.plotly_chart(match_fig)
+
+            st.subheader("Comparison by Season")
+            match_fig2 = go.Figure()
+            t_wl_s = db.match_wonloss_by_season(t1)
+            t_m_s = db.team_match_by_season(t1)
+            match_fig2.add_trace(go.Scatter(x=t_m_s['season'], y= t_m_s['num'], name = 'Total', mode='lines+markers')).update_traces(marker=dict(symbol='square', size=15))
+            match_fig2.add_trace(go.Bar(x=t_wl_s['season'], y=t_wl_s['won'], name= 'Won'))
+            match_fig2.add_trace(go.Bar(x=t_wl_s['season'], y=t_wl_s['lost'], name = 'Lost'))
+
+            match_fig2.update_layout(xaxis=dict(type = 'category'), barmode='stack')
+            st.plotly_chart(match_fig2)
+
+
 
 elif option_button == 'Batsman Record':
     st.header("IPL Batsman Record")
