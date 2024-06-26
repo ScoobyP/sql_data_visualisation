@@ -170,7 +170,7 @@ class DB:
         return all_names
 
     
-
+    @st.cache_data
     def fetch_all_teams(self):
         ipl_teams = []
         # Extracting all team names
