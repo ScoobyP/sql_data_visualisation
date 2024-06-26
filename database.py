@@ -732,6 +732,7 @@ class DB:
         df = pd.read_sql(query, _self.mydb, params=(team_name, team_name, team_name, team_name, team_name,team_name,team_name,team_name,team_name,team_name,team_name,team_name,))
         return df.sort_values(by = 'toss_decision')
 
+    @st.cache_data
     def team_match_by_season(self, team):
         query= '''
         SELECT season, COUNT(*) AS 'num' FROM ipl_OLAP.all_matches
@@ -741,6 +742,7 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team))
         return df.sort_values(by='season')
 
+    @st.cache_data
     def match_wonloss_by_season(self, team):
         query = '''
         SELECT a1.season, won, lost FROM (SELECT season, COUNT(*) AS 'won' FROM ipl_OLAP.all_matches
