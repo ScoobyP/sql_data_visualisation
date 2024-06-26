@@ -234,7 +234,11 @@ elif option_button == 'Team Record':
             match_fig2.update_layout(xaxis=dict(type = 'category'), barmode='stack')
             st.plotly_chart(match_fig2)
 
-
+        exp_p2_2 = st.expander("Show Team Matches", expanded = False)
+        with exp_p2_2:
+            df_m = db.team_match_by_city(t1)
+            st.subheader(f"{t1} in City by Season")
+            st.plotly_chart(px.bar(df_m, x=df_m['season'], y= df_m['No. of Matches in City'], color=df_m['city']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Cities Played in"))
 
 elif option_button == 'Batsman Record':
     st.header("IPL Batsman Record")
