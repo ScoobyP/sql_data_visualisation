@@ -249,6 +249,10 @@ elif option_button == 'Team Record':
             st.subheader(f"{t1} in City by Season")
             st.plotly_chart(px.bar(df_m, x=df_m['season'], y= df_m['No. of Matches in City'], color=df_m['city']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Cities Played in"))
 
+            a_t_b_s = db.against_team_by_season(t1)
+            st.subheader(f"{t1} against Teams by Season")
+            st.plotly_chart(px.bar(a_t_b_s, x=a_t_b_s['season'], y= a_t_b_s['matches'], color=a_t_b_s['against']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Teams Played Against"))
+
 elif option_button == 'Batsman Record':
     st.header("IPL Batsman Record")
     st.divider()

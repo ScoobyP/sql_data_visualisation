@@ -796,6 +796,21 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team,team, team))
         return df
 
+    def against_team_by_season(self,team):
+        query='''
+        SELECT season, against, SUM(num_matches) AS 'matches' FROM (SELECT season, team2 AS 'against', COUNT(team2) AS 'num_matches' FROM all_matches
+        WHERE team1 = %s
+        GROUP BY season, team2
+        UNION ALL
+        SELECT season, team1, COUNT(team1) AS 'num_matches' FROM all_matches
+        WHERE team2 = %s
+        GROUP BY season, team1) i1
+        GROUP BY season, against
+        '''
+        self.my_cursor.fetchall()
+        df = pd.read_sql(query, self.mydb, params=(team, team))
+        return df
+
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
@@ -825,6 +840,4 @@ class DB:
 
 
 if __name__ == "__main__":
-    db = DB()
-    df = db.wonloss_against('Mumbai Indians')
-    print(df)
+    pass
