@@ -704,7 +704,7 @@ class DB:
         df = pd.DataFrame({'Team Status': status,'First Season': first_season,'Matches Played': against, 'Most Against': f"{most_against[0]} ({most_against[1]})" ,'Won': won,  'Lost': against-won,'Won by Batting First': won_bat,'Won by Fielding First': won_field ,'Win %': f'{round(float(won/against*100),2)} %', 'Titles Won': titles}, index=['Value'])
         return df.transpose()
 
-    @st.cache_data
+
     def matches_won_lost(_self, team_name):
         query = '''
         WITH bigtable1 AS (SELECT a1.toss_decision, won, lost FROM (SELECT toss_decision,COUNT(*) AS 'lost' FROM ipl_OLAP.all_matches
@@ -732,7 +732,7 @@ class DB:
         df = pd.read_sql(query, _self.mydb, params=(team_name, team_name, team_name, team_name, team_name,team_name,team_name,team_name,team_name,team_name,team_name,team_name,))
         return df.sort_values(by = 'toss_decision')
 
-    @st.cache_data
+
     def team_match_by_season(self, team):
         query= '''
         SELECT season, COUNT(*) AS 'num' FROM ipl_OLAP.all_matches
@@ -742,7 +742,7 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team))
         return df.sort_values(by='season')
 
-    @st.cache_data
+
     def match_wonloss_by_season(self, team):
         query = '''
         SELECT a1.season, won, lost FROM (SELECT season, COUNT(*) AS 'won' FROM ipl_OLAP.all_matches
