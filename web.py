@@ -223,6 +223,15 @@ elif option_button == 'Team Record':
             match_fig.add_trace(go.Bar(x=team_wonloss['toss_decision'], y=team_wonloss['_lost'], name = 'Lost'))
             st.plotly_chart(match_fig)
 
+            st.subheader("Comparison by Team")
+            won_ag_team = db.won_against(t1)
+            wonloss_fig = go.Figure()
+            wonloss_fig.add_trace(go.Bar(x=won_ag_team['won_against'], y= won_ag_team['Won'], name = 'Won', marker = dict(color='#33cc33')))
+            lost_ag_team = db.loss_against(t1)
+            wonloss_fig.add_trace(go.Bar(x=lost_ag_team['lost_against'], y=lost_ag_team['Lost'], name='Lost', marker = dict(color='#ffff66')))
+            wonloss_fig.update_layout(xaxis=dict(type='category'), barmode = 'stack')
+            st.plotly_chart(wonloss_fig)
+
             st.subheader("Comparison by Season")
             match_fig2 = go.Figure()
             t_wl_s = db.match_wonloss_by_season(t1)

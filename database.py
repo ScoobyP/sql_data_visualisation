@@ -13,11 +13,11 @@ class DB:
         try:
             load_dotenv()
             #self.mydb = mysql.connector.connect(
-                #host='localhost',
-                #user='root',
+                #host='',
+                #user='',
                 #password='',
-                #port='3306',
-                #database='ipl_OLAP'
+                #port='',
+                #database=''
             #)
             self.mydb = mysql.connector.connect(
                  host=os.getenv("aiven_url1"),
@@ -636,7 +636,7 @@ class DB:
 
 # TEAM stats START
 
-    st.cache_data
+    @st.cache_data
     def teams_table(_self, team):
         team_name = team
 
@@ -766,6 +766,34 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team))
         return df
 
+    def won_against(self, team):
+        query='''
+       SELECT won_against, SUM(num_times) AS Won FROM (SELECT team2 AS 'won_against', COUNT(team2) 'num_times' FROM all_matches
+        WHERE team1 = %s AND winner = %s
+        GROUP BY won_against
+        UNION ALL
+        SELECT team1 AS 'won_against', COUNT(team1) 'num_times' FROM all_matches
+        WHERE team2 = %s AND winner = %s
+        GROUP BY won_against) g1
+        GROUP BY won_against
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
+        return df
+
+    def loss_against(self,team):
+        query='''
+        SELECT lost_against, SUM(num_times) AS Lost  FROM (SELECT team2 AS 'lost_against', COUNT(team2) 'num_times' FROM all_matches
+        WHERE team1 = %s AND winner != %s
+        GROUP BY lost_against
+        UNION ALL
+        SELECT team1 AS 'lost_against', COUNT(team1) 'num_times' FROM all_matches
+        WHERE team2 = %s AND winner != %s
+        GROUP BY lost_against) h1
+        GROUP BY lost_against
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team, team,team, team))
+        return df
+
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
@@ -795,4 +823,6 @@ class DB:
 
 
 if __name__ == "__main__":
-    pass
+    db = DB()
+    df = db.wonloss_against('Mumbai Indians')
+    print(df)
