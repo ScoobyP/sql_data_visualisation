@@ -777,6 +777,7 @@ class DB:
         GROUP BY won_against) g1
         GROUP BY won_against
         '''
+        self.my_cursor.fetchall()
         df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
         return df
 
@@ -791,6 +792,7 @@ class DB:
         GROUP BY lost_against) h1
         GROUP BY lost_against
         '''
+        self.my_cursor.fetchall()
         df = pd.read_sql(query, self.mydb, params=(team, team,team, team))
         return df
 
