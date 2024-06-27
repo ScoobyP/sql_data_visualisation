@@ -248,8 +248,14 @@ elif option_button == 'Team Record':
             teams_wb_s = db.grouped_stacked_won(t1)
             fig_won = px.bar(teams_wb_s, x = teams_wb_s['season'], y=teams_wb_s['all_won'], color=teams_wb_s['against'], barmode = 'stack', title = 'Won Against').update_layout(xaxis=dict(type = 'category', categoryorder= 'category ascending', title = 'Season'), yaxis = dict(title='Matches Won'), legend_title='Against')
 
+            won_go = go.Scatter(x=t_wl_s['season'], y= t_wl_s['won'], name = 'Total Won', mode = 'lines+markers')
+            fig_won.add_trace(won_go)
+
             teams_lb_s = db.grouped_stacked_lost(t1)
             fig_lost = px.bar(x = teams_lb_s['season'],y=teams_lb_s['all_lost'], color=teams_lb_s['against'], barmode = 'stack', title = 'Lost Against').update_layout(xaxis=dict(type = 'category', categoryorder= 'category ascending', title='Season'), yaxis=dict(title='Matches Lost'), legend=dict(title='Against'))
+
+            loss_go = go.Scatter(x=t_wl_s['season'], y=t_wl_s['lost'], name='Total Lost', mode='lines+markers')
+            fig_lost.add_trace(loss_go)
 
             #fig_winloss_byteam_byseason = go.Figure()
 
