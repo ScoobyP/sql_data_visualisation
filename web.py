@@ -40,7 +40,7 @@ if option_button == 'General Info':
         interesting patterns and insights. Whether you're a cricket fan or just curious
         about data analysis, I hope you'll find something fascinating here.
         
-        A Glimpse Into the Technical Magic
+        A Glimpse Into the Technical Side
         
         I used Python along with libraries like pandas for data handling and Plotly
         for creating the visualizations. SQL queries helped me fetch and process the 
@@ -210,12 +210,44 @@ elif option_button == 'Team Record':
 
     if b1:
         c1,c2, c3 = st.columns([1,2,1])
+
+
         with c2:
             st.header(f'{t1}')
             st.table(db.teams_table(t1))
 
-        exp_p2_1 = st.expander("Show Win Loss Stats", expanded=False)
+        exp_p2_1 = st.expander(f"Show Match Stats of {t1}", expanded=False)
+        t_m_s = db.team_match_by_season(t1)
         with exp_p2_1:
+            st.subheader(f"All Matches by {t1}")
+            team_pie = db.all_match_piechart_by_team(t1)
+            st.plotly_chart(px.pie(team_pie, names=team_pie['Against'], values=team_pie['No. of Matches']))
+
+            st.subheader(f"Total Matches of {t1} per Season")
+            total_matches_by_season = go.Figure()
+            total_matches_by_season.add_trace(
+                go.Scatter(x=t_m_s['season'], y=t_m_s['num'], name='Total Played', mode='lines+markers')).update_traces(
+                marker=dict(symbol='circle-open', size=20)).update_layout(
+                xaxis=dict(type='category', categoryorder='category ascending', title='Season'),
+                yaxis=dict(title='Total Played'))
+            st.plotly_chart(total_matches_by_season)
+
+            df_m = db.team_match_by_city(t1)
+            st.subheader(f"{t1} in City by Season")
+            st.plotly_chart(
+                px.bar(df_m, x=df_m['season'], y=df_m['No. of Matches in City'], color=df_m['city']).update_layout(
+                    xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
+                    yaxis_title='No. of Matches', legend_title="Cities Played in"))
+
+            a_t_b_s = db.against_team_by_season(t1)
+            st.subheader(f"{t1} Against Other Teams by Season")
+            st.plotly_chart(
+                px.bar(a_t_b_s, x=a_t_b_s['season'], y=a_t_b_s['matches'], color=a_t_b_s['against']).update_layout(
+                    xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
+                    yaxis_title='No. of Matches', legend_title="Teams Played Against"))
+###############################################################################
+        exp_p2_2 = st.expander(f"Show Win Loss Stats of {t1}", expanded=False)
+        with exp_p2_2:
             st.subheader('Comparison by Batting First and Fielding First')
             match_fig = go.Figure()
             team_wonloss = db.matches_won_lost(t1)
@@ -223,7 +255,7 @@ elif option_button == 'Team Record':
             match_fig.add_trace(go.Bar(x=team_wonloss['toss_decision'], y=team_wonloss['_lost'], name = 'Lost'))
             st.plotly_chart(match_fig)
 
-            st.subheader("Comparison by Team")
+            st.subheader("Comparison Against Other Teams")
             won_ag_team = db.won_against(t1)
             wonloss_fig = go.Figure()
             wonloss_fig.add_trace(go.Bar(x=won_ag_team['won_against'], y= won_ag_team['Won'], name = 'Won', marker = dict(color='#33cc33')))
@@ -235,7 +267,7 @@ elif option_button == 'Team Record':
             st.subheader("Comparison by Season")
             match_fig2 = go.Figure()
             t_wl_s = db.match_wonloss_by_season(t1)
-            t_m_s = db.team_match_by_season(t1)
+
             match_fig2.add_trace(go.Scatter(x=t_m_s['season'], y= t_m_s['num'], name = 'Total', mode='lines+markers')).update_traces(marker=dict(symbol='square', size=15))
             match_fig2.add_trace(go.Bar(x=t_wl_s['season'], y=t_wl_s['won'], name= 'Won'))
             match_fig2.add_trace(go.Bar(x=t_wl_s['season'], y=t_wl_s['lost'], name = 'Lost'))
@@ -244,7 +276,7 @@ elif option_button == 'Team Record':
             st.plotly_chart(match_fig2)
 
 
-            st.subheader("Against Teams by Season")
+            st.subheader("Comparison Against Teams by Season")
             teams_wb_s = db.grouped_stacked_won(t1)
             fig_won = px.bar(teams_wb_s, x = teams_wb_s['season'], y=teams_wb_s['all_won'], color=teams_wb_s['against'], barmode = 'stack', title = 'Won Against').update_layout(xaxis=dict(type = 'category', categoryorder= 'category ascending', title = 'Season'), yaxis = dict(title='Matches Won'), legend_title='Against')
 
@@ -257,37 +289,12 @@ elif option_button == 'Team Record':
             loss_go = go.Scatter(x=t_wl_s['season'], y=t_wl_s['lost'], name='Total Lost', mode='lines+markers')
             fig_lost.add_trace(loss_go)
 
-            #fig_winloss_byteam_byseason = go.Figure()
-
-
-            #for trace in fig_won.data:
-                #fig_winloss_byteam_byseason.add_trace(trace.update(offsetgroup=0))
-            #for trace in fig_lost.data:
-                #fig_winloss_byteam_byseason.add_trace(trace.update( offsetgroup=1))
 
             st.plotly_chart(fig_won)
             st.plotly_chart(fig_lost)
-            #fig_winloss_byteam_byseason.update_layout(title='Wins and Losses Against Teams by Season', xaxis_title='Season', yaxis_title='Matches Played', xaxis=dict(type = 'category'))
-            #st.plotly_chart(fig_winloss_byteam_byseason)
 
-        exp_p2_2 = st.expander("Show Team Matches", expanded = False)
-        with exp_p2_2:
-            st.subheader(f"All Matches by {t1}")
-            team_pie = db.all_match_piechart_by_team(t1)
-            st.plotly_chart(px.pie(team_pie, names=team_pie['Against'], values=team_pie['No. of Matches']))
+###############################################################################
 
-            st.subheader(f"Total Matches by {t1} by Season")
-            total_matches_by_season = go.Figure()
-            total_matches_by_season.add_trace(go.Scatter(x=t_m_s['season'], y= t_m_s['num'], name = 'Total Played', mode='lines+markers')).update_traces(marker=dict(symbol='circle-open', size=20)).update_layout(xaxis=dict(type = 'category', categoryorder= 'category ascending' , title='Season'), yaxis=dict(title='Total Played'))
-            st.plotly_chart(total_matches_by_season)
-
-            df_m = db.team_match_by_city(t1)
-            st.subheader(f"{t1} in City by Season")
-            st.plotly_chart(px.bar(df_m, x=df_m['season'], y= df_m['No. of Matches in City'], color=df_m['city']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Cities Played in"))
-
-            a_t_b_s = db.against_team_by_season(t1)
-            st.subheader(f"{t1} against Teams by Season")
-            st.plotly_chart(px.bar(a_t_b_s, x=a_t_b_s['season'], y= a_t_b_s['matches'], color=a_t_b_s['against']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Teams Played Against"))
 
 elif option_button == 'Batsman Record':
     st.header("IPL Batsman Record")

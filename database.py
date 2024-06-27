@@ -642,21 +642,30 @@ class DB:
         first_season = _self.my_cursor.fetchone()[0]
 
         _self.my_cursor.execute('''
-                SELECT team2, against
-                FROM (SELECT a1.team2,
-                       SUM(num_match) AS 'against',
-                       DENSE_RANK() over (ORDER BY SUM(num_match) DESC) AS 'rank'
-                FROM (SELECT team2, COUNT(team2) AS 'num_match' FROM ipl_OLAP.all_matches
-                WHERE team1 = %s
-                GROUP BY team2
-                UNION ALL
-                SELECT team1, COUNT(team2) FROM ipl_OLAP.all_matches
-                WHERE team2 = %s
-                GROUP BY team1) a1
-                GROUP BY a1.team2) b1
-                WHERE b1.rank = 1
+        
+        SELECT team2 AS 'Team' , against AS 'Played'
+        FROM (SELECT a1.team2,
+               SUM(num_match) AS 'against',
+               DENSE_RANK() over (ORDER BY SUM(num_match) DESC) AS 'rank'
+        FROM (SELECT team2, COUNT(team2) AS 'num_match' FROM ipl_OLAP.all_matches
+        WHERE team1 = %s
+        GROUP BY team2
+        UNION ALL
+        SELECT team1, COUNT(team2) FROM ipl_OLAP.all_matches
+        WHERE team2 = %s
+        GROUP BY team1) a1
+        GROUP BY a1.team2) b1
+        WHERE b1.rank = 1
                                              ''', (team_name, team_name))
-        most_against = _self.my_cursor.fetchone()
+        most_against = _self.my_cursor.fetchall()
+        t=[]
+        m=[]
+        for i in most_against:
+            t.append(i[0])
+            m.append(f"({str(i[1])})")
+        most_against_df = pd.DataFrame({'Team': t, 'Matches':m})
+        most_against_df = most_against_df.to_string(index=False, header=False)
+
 
         # because I don't know why
         _self.my_cursor.fetchall()
@@ -673,11 +682,14 @@ class DB:
                                                 ''', (team_name,))
         won_field = _self.my_cursor.fetchone()[0]
 
-        df = pd.DataFrame({'Team Status': status, 'First Season': first_season, 'Matches Played': against,
-                           'Most Against': f"{most_against[0]} ({most_against[1]})", 'Won': won, 'Lost': against - won,
+        df = pd.DataFrame({'Team Status': status, 'First Season': first_season, 'Matches Played': against, 'Most Against': most_against_df , 'Won': won, 'Lost': against - won,
                            'Won by Batting First': won_bat, 'Won by Fielding First': won_field,
                            'Win %': f'{round(float(won / against * 100), 2)} %', 'Titles Won': titles}, index=['Value'])
         return df.transpose()
+
+
+
+
 
     def matches_won_lost(_self, team_name):
         query = '''
