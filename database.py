@@ -5,7 +5,6 @@ import pandas as pd
 import os
 
 
-
 class DB:
 
     def __init__(self):
@@ -19,12 +18,12 @@ class DB:
                 #port='',
                 #database=''
             #)
-            self.mydb = mysql.connector.connect(
-                 host=os.getenv("aiven_url1"),
-                 user=os.getenv("aiven_user_name"),
-                password=os.getenv("aiven_user_pass"),
-                 port=os.getenv("aiven_port"),
-                 database=os.getenv("aiven_db2")
+             self.mydb = mysql.connector.connect(
+             host=os.getenv("aiven_url1"),
+             user=os.getenv("aiven_user_name"),
+             password=os.getenv("aiven_user_pass"),
+             port=os.getenv("aiven_port"),
+             database=os.getenv("aiven_db2")
 
              )
             self.my_cursor = self.mydb.cursor()
@@ -91,8 +90,8 @@ class DB:
         return data[0]
 
     def most_titles(self):
-        teams=[]
-        times=[]
+        teams = []
+        times = []
         self.my_cursor.execute('''
                 WITH table1 AS (SELECT winner, COUNT(*) as 'times_won' FROM ipl_OLAP.all_matches
                 WHERE match_type = 'Final'
@@ -145,7 +144,13 @@ class DB:
     @st.cache_data
     def front_index_table(_self):
 
-        df = pd.DataFrame({'Format: ': '20 Overs', 'First Season: ': _self.first_edition(), 'Latest Season: ': _self.latest_edition(), 'Next Season: ': _self.next_edition(), 'Number of Teams: ': _self.num_of_current_teams(), 'Current Champion: ': _self.current_champion(), 'Most Titles: ': _self.most_titles().to_string(index=False, header=False), 'Most Runs': _self.most_runs().to_string(index=False, header=False), 'Most Wickets': _self.most_wickets().to_string(index=False, header=False)}, index=['Values'])
+        df = pd.DataFrame(
+            {'Format: ': '20 Overs', 'First Season: ': _self.first_edition(), 'Latest Season: ': _self.latest_edition(),
+             'Next Season: ': _self.next_edition(), 'Number of Teams: ': _self.num_of_current_teams(),
+             'Current Champion: ': _self.current_champion(),
+             'Most Titles: ': _self.most_titles().to_string(index=False, header=False),
+             'Most Runs': _self.most_runs().to_string(index=False, header=False),
+             'Most Wickets': _self.most_wickets().to_string(index=False, header=False)}, index=['Values'])
         return df.transpose()
 
     # Front Table END
@@ -169,15 +174,13 @@ class DB:
 
         return all_names
 
-    
-
     def fetch_all_teams(self):
         ipl_teams = []
         # Extracting all team names
 
         self.my_cursor.execute('''
         SELECT batting_team FROM ipl_OLAP.all_deliveries
-        UNION
+        UNION 
         SELECT bowling_team FROM ipl_OLAP.all_deliveries
         ''')
 
@@ -187,7 +190,6 @@ class DB:
 
         return ipl_teams
 
-    
     # IPL Matches' Stats START
 
     def fetch_current_teams(self):
@@ -205,8 +207,6 @@ class DB:
 
         return current_teams
 
-    
-
     @st.cache_data
     def fetch_current_and_defunct_teams(_self):
         current_teams = _self.fetch_current_teams()
@@ -218,8 +218,6 @@ class DB:
                 all_teams_pnp.append(team)
 
         return sorted(all_teams_pnp)
-
-    
 
     @st.cache_data
     def matches_by_all_teams(_self):
@@ -241,8 +239,6 @@ class DB:
             matches.append(item[1])
 
         return sorted(teams), matches
-
-    
 
     @st.cache_data
     def fetch_cities_played_in(_self):
@@ -267,8 +263,6 @@ class DB:
 
         return df_original.sort_values('Season', ascending=True)
 
-    
-
     @st.cache_data
     def fetch_matches_by_season(_self):
         num_matches = []
@@ -277,7 +271,7 @@ class DB:
         SELECT season, COUNT(*) AS 'num_matches' FROM ipl_OLAP.all_matches
         GROUP BY season
         ''')
-        data= _self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for i in data:
             season.append(i[0])
             num_matches.append(i[1])
@@ -298,13 +292,12 @@ class DB:
         WHERE innings < 3
         ''')
         runs = _self.my_cursor.fetchone()
-        return int(runs[0])#
+        return int(runs[0])  #
 
-    
     @st.cache_data
     def total_runs(_self):
         s = []
-        run_scored= []
+        run_scored = []
         run_extras = []
         all_runs = []
         _self.my_cursor.execute('''
@@ -318,7 +311,7 @@ class DB:
             run_scored.append(i[1])
             run_extras.append(i[2])
             all_runs.append(i[3])
-        df= pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
+        df = pd.DataFrame({'Season': s, 'Runs Scored': run_scored, 'Extras': run_extras, 'Total Runs': all_runs})
         return df
 
     @st.cache_data
@@ -346,8 +339,6 @@ class DB:
         df = pd.DataFrame({'Season': s, 'Name': n, 'Runs': r})
         return df
 
-    
-
     @st.cache_data
     def total_six(_self):
         sixes = []
@@ -361,8 +352,6 @@ class DB:
 
         return sixes[0][0]
 
-    
-
     @st.cache_data
     def total_fours(_self):
         fours = []
@@ -375,8 +364,6 @@ class DB:
             fours.append(item)
 
         return fours[0][0]
-
-    
 
     @st.cache_data
     def total_boundaries_by_season(_self):
@@ -437,7 +424,9 @@ class DB:
 
     @st.cache_data
     def total_fifties_centuries(_self):
-        df = pd.DataFrame({'Season': _self.num_fifties_by_season()['Season'], 'Total': _self.num_fifties_by_season()['Fifties']+_self.num_centuries_by_season()['Centuries']})
+        df = pd.DataFrame({'Season': _self.num_fifties_by_season()['Season'],
+                           'Total': _self.num_fifties_by_season()['Fifties'] + _self.num_centuries_by_season()[
+                               'Centuries']})
         return df.sort_values(by='Season')
 
     # IPL Batting Stats END
@@ -455,8 +444,6 @@ class DB:
 
         return balls_thrown
 
-    
-
     @st.cache_data
     def total_penalty(_self):
         pen = []
@@ -468,8 +455,6 @@ class DB:
         for i in data:
             pen.append(int(i))
         return pen[0]
-
-    
 
     @st.cache_data
     def total_wickets_by_category_by_season(_self):
@@ -489,8 +474,6 @@ class DB:
         df = pd.DataFrame({'Season': season, 'Category': wickets_category, 'Total Wickets': total_wickets})
         df1 = df.sort_values(by='Season')
         return df1
-
-    
 
     @st.cache_data
     def all_extras_by_category_season(_self):
@@ -515,7 +498,8 @@ class DB:
             legbyes.append(item[4])
             penalty.append(item[5])
 
-        df = pd.DataFrame({'Season': season, 'Wides':wides, 'No Balls': noballs, 'Penalty': penalty, 'Byes': byes, 'Leg Byes': legbyes  })
+        df = pd.DataFrame({'Season': season, 'Wides': wides, 'No Balls': noballs, 'Penalty': penalty, 'Byes': byes,
+                           'Leg Byes': legbyes})
         df1 = df.sort_values(by='Season')
         return df1
 
@@ -546,7 +530,6 @@ class DB:
         df = pd.DataFrame({'Season': s, 'Name': n, 'Wickets': w})
         return df
 
-
     @st.cache_data
     def total_wides(_self):
         all_wides = []
@@ -559,8 +542,6 @@ class DB:
             all_wides.append(int(item))
 
         return all_wides[0]
-
-    
 
     @st.cache_data
     def total_noballs(_self):
@@ -575,8 +556,6 @@ class DB:
 
         return all_noballs[0]
 
-    
-
     @st.cache_data
     def total_extras(_self):
         all_extras = []
@@ -589,8 +568,6 @@ class DB:
             all_extras.append(int(item))
 
         return all_extras[0]
-
-    
 
     @st.cache_data
     def total_byes(_self):
@@ -605,8 +582,6 @@ class DB:
 
         return all_byes[0]
 
-    
-
     @st.cache_data
     def total_legbyes(_self):
         all_legbyes = []
@@ -620,8 +595,6 @@ class DB:
 
         return all_legbyes[0]
 
-    
-
     @st.cache_data
     def total_wickets(_self):
         _self.my_cursor.execute('''
@@ -631,10 +604,9 @@ class DB:
         data = _self.my_cursor.fetchone()
         return data[0]
 
-    
-# IPL Bowling Stats END
+    # IPL Bowling Stats END
 
-# TEAM stats START
+    # TEAM stats START
 
     @st.cache_data
     def teams_table(_self, team):
@@ -666,7 +638,7 @@ class DB:
         _self.my_cursor.execute('''
         SELECT MIN(all_matches.season) FROM ipl_OLAP.all_matches
         WHERE team1 = %s OR team2 = %s;
-                                     ''',(team_name,team_name))
+                                     ''', (team_name, team_name))
         first_season = _self.my_cursor.fetchone()[0]
 
         _self.my_cursor.execute('''
@@ -701,9 +673,11 @@ class DB:
                                                 ''', (team_name,))
         won_field = _self.my_cursor.fetchone()[0]
 
-        df = pd.DataFrame({'Team Status': status,'First Season': first_season,'Matches Played': against, 'Most Against': f"{most_against[0]} ({most_against[1]})" ,'Won': won,  'Lost': against-won,'Won by Batting First': won_bat,'Won by Fielding First': won_field ,'Win %': f'{round(float(won/against*100),2)} %', 'Titles Won': titles}, index=['Value'])
+        df = pd.DataFrame({'Team Status': status, 'First Season': first_season, 'Matches Played': against,
+                           'Most Against': f"{most_against[0]} ({most_against[1]})", 'Won': won, 'Lost': against - won,
+                           'Won by Batting First': won_bat, 'Won by Fielding First': won_field,
+                           'Win %': f'{round(float(won / against * 100), 2)} %', 'Titles Won': titles}, index=['Value'])
         return df.transpose()
-
 
     def matches_won_lost(_self, team_name):
         query = '''
@@ -729,19 +703,19 @@ class DB:
         SELECT toss_decision, IF(won IS NULL, 0, won) AS _won, IF(lost IS NULL, 0 , lost) AS _lost FROM bigtable1;
         '''
 
-        df = pd.read_sql(query, _self.mydb, params=(team_name, team_name, team_name, team_name, team_name,team_name,team_name,team_name,team_name,team_name,team_name,team_name,))
-        return df.sort_values(by = 'toss_decision')
-
+        df = pd.read_sql(query, _self.mydb, params=(
+        team_name, team_name, team_name, team_name, team_name, team_name, team_name, team_name, team_name, team_name,
+        team_name, team_name,))
+        return df.sort_values(by='toss_decision')
 
     def team_match_by_season(self, team):
-        query= '''
+        query = '''
         SELECT season, COUNT(*) AS 'num' FROM ipl_OLAP.all_matches
         WHERE team1=%s OR team2=%s
         GROUP BY season;
         '''
         df = pd.read_sql(query, self.mydb, params=(team, team))
         return df.sort_values(by='season')
-
 
     def match_wonloss_by_season(self, team):
         query = '''
@@ -767,7 +741,7 @@ class DB:
         return df
 
     def won_against(self, team):
-        query='''
+        query = '''
        SELECT won_against, SUM(num_times) AS Won FROM (SELECT team2 AS 'won_against', COUNT(team2) 'num_times' FROM all_matches
         WHERE team1 = %s AND winner = %s
         GROUP BY won_against
@@ -781,8 +755,8 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
         return df
 
-    def loss_against(self,team):
-        query='''
+    def loss_against(self, team):
+        query = '''
         SELECT lost_against, SUM(num_times) AS Lost  FROM (SELECT team2 AS 'lost_against', COUNT(team2) 'num_times' FROM all_matches
         WHERE team1 = %s AND winner != %s
         GROUP BY lost_against
@@ -793,11 +767,11 @@ class DB:
         GROUP BY lost_against
         '''
         self.my_cursor.fetchall()
-        df = pd.read_sql(query, self.mydb, params=(team, team,team, team))
+        df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
         return df
 
-    def against_team_by_season(self,team):
-        query='''
+    def against_team_by_season(self, team):
+        query = '''
         SELECT season, against, SUM(num_matches) AS 'matches' FROM (SELECT season, team2 AS 'against', COUNT(team2) AS 'num_matches' FROM all_matches
         WHERE team1 = %s
         GROUP BY season, team2
@@ -811,6 +785,36 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team))
         return df
 
+    def grouped_stacked_won(self, team):
+        query = '''
+        SELECT season, against, SUM(won) AS all_won FROM (SELECT season, team2 AS against, COUNT(team2) AS won FROM all_matches
+        WHERE team1 = %s AND winner = %s
+        GROUP BY Season, team2
+        UNION ALL
+        SELECT season, team1, COUNT(team1) AS won FROM all_matches
+        WHERE team2 = %s AND winner = %s
+        GROUP BY Season, team1) a1
+        GROUP BY season, against;
+        '''
+        self.my_cursor.fetchall()
+        df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
+        return df
+
+    def grouped_stacked_lost(self,team):
+        query = '''
+        SELECT season, against, SUM(lost) AS all_lost FROM (SELECT season, team2 AS against, COUNT(team2) AS lost FROM all_matches
+        WHERE team1 = %s AND winner != %s
+        GROUP BY Season, team2
+        UNION ALL
+        SELECT season, team1, COUNT(team1) AS won FROM all_matches
+        WHERE team2 = %s AND winner != %s
+        GROUP BY Season, team1) a1
+        GROUP BY season, against
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
+        return df
+
+
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
@@ -822,9 +826,6 @@ class DB:
             batsman.append(item[0])
 
         return batsman
-
-    
-
 
     def all_bowler_names(self):
         bowler = []
