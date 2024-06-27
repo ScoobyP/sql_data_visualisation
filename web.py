@@ -272,6 +272,15 @@ elif option_button == 'Team Record':
 
         exp_p2_2 = st.expander("Show Team Matches", expanded = False)
         with exp_p2_2:
+            st.subheader(f"All Matches by {t1}")
+            team_pie = db.all_match_piechart_by_team(t1)
+            st.plotly_chart(px.pie(team_pie, names=team_pie['Against'], values=team_pie['No. of Matches']))
+
+            st.subheader(f"Total Matches by {t1} by Season")
+            total_matches_by_season = go.Figure()
+            total_matches_by_season.add_trace(go.Scatter(x=t_m_s['season'], y= t_m_s['num'], name = 'Total Played', mode='lines+markers')).update_traces(marker=dict(symbol='circle-open', size=20)).update_layout(xaxis=dict(type = 'category', categoryorder= 'category ascending' , title='Season'), yaxis=dict(title='Total Played'))
+            st.plotly_chart(total_matches_by_season)
+
             df_m = db.team_match_by_city(t1)
             st.subheader(f"{t1} in City by Season")
             st.plotly_chart(px.bar(df_m, x=df_m['season'], y= df_m['No. of Matches in City'], color=df_m['city']).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'), xaxis_title = "Season", yaxis_title='No. of Matches', legend_title="Cities Played in"))

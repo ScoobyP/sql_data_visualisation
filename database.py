@@ -814,7 +814,19 @@ class DB:
         df = pd.read_sql(query, self.mydb, params=(team, team, team, team))
         return df
 
-
+    def all_match_piechart_by_team(self,team):
+        query = '''
+        SELECT Against, SUM(matches) AS 'No. of Matches' FROM (SELECT team2 AS 'Against', COUNT(team2) AS 'matches' FROM all_matches
+        WHERE team1 = %s
+        GROUP BY team2
+        UNION ALL
+        SELECT team1, COUNT(team1) AS 'matches' FROM all_matches
+        WHERE team2 = %s
+        GROUP BY team1) a1
+        GROUP BY Against
+        '''
+        df = pd.read_sql(query, self.mydb, params=(team,team))
+        return df
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
