@@ -102,7 +102,7 @@ class DB:
         data = self.my_cursor.fetchall()
         for i in data:
             teams.append(str(i[0]))
-            times.append(f' ({i[1]})')
+            times.append(f' ({i[1]})\n')
 
         return pd.DataFrame({'Team': teams, 'Titles Won': times})
 
@@ -662,7 +662,7 @@ class DB:
         m=[]
         for i in most_against:
             t.append(i[0])
-            m.append(f"({str(i[1])})")
+            m.append(f'({i[1]})')
         most_against_df = pd.DataFrame({'Team': t, 'Matches':m})
         most_against_df = most_against_df.to_string(index=False, header=False)
 
