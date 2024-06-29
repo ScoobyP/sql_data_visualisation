@@ -48,7 +48,7 @@ class DB:
         ORDER BY season ASC LIMIT 1
         ''')
         data = self.my_cursor.fetchone()
-        return data[0]
+        return str(data[0])
 
     def latest_edition(self):
         self.my_cursor.execute('''
@@ -57,7 +57,7 @@ class DB:
         ORDER BY season DESC LIMIT 1
         ''')
         data = self.my_cursor.fetchone()
-        return data[0]
+        return str(data[0])
 
     def next_edition(self):
         self.my_cursor.execute('''
@@ -67,7 +67,7 @@ class DB:
         ORDER BY season DESC LIMIT 1) t1
         ''')
         data = self.my_cursor.fetchone()
-        return int(data[0])
+        return str(int(data[0]))
 
     def num_of_current_teams(self):
 
@@ -77,7 +77,7 @@ class DB:
                 WHERE season = (SELECT MAX(season) FROM all_deliveries);
                 ''')
         data = self.my_cursor.fetchone()
-        return data[0]
+        return str(data[0])
 
     def current_champion(self):
 
@@ -102,7 +102,7 @@ class DB:
         data = self.my_cursor.fetchall()
         for i in data:
             teams.append(str(i[0]))
-            times.append(f' ({i[1]})\n')
+            times.append(f' ({str(i[1])})')
 
         return pd.DataFrame({'Team': teams, 'Titles Won': times})
 
@@ -119,7 +119,7 @@ class DB:
         ''')
         data = self.my_cursor.fetchall()
         for i in data:
-            name.append(i[0])
+            name.append(str(i[0]))
             runs.append(f' ({str(round((i[1])))})')
         return pd.DataFrame({'Name': name, 'Runs': runs})
 
@@ -138,7 +138,7 @@ class DB:
         data = self.my_cursor.fetchall()
         for i in data:
             name.append(str(i[0]))
-            wicks.append(f' ({i[1]})')
+            wicks.append(f' ({str(i[1])})')
         return pd.DataFrame({'Name': name, 'Wickets': wicks})
 
     @st.cache_data
