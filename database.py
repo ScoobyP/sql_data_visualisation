@@ -839,6 +839,21 @@ class DB:
         '''
         df = pd.read_sql(query, self.mydb, params=(team,team))
         return df
+
+    def maiden_overs_by_season(self):
+        self.my_cursor.execute('''
+        SELECT season,COUNT(*) AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball),SUM(runs_off_bat)+SUM(extras) AS 'total' FROM all_deliveries
+        GROUP BY season, match_id, innings, FLOOR(ball)) a1
+        WHERE total=0 AND innings < 3
+        GROUP BY season
+                ''')
+        data = self.my_cursor.fetchall()
+        s = []
+        num =[]
+        for i in data:
+            s.append(i[0])
+            num.append(i[1])
+        return s,num
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
