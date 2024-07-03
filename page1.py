@@ -157,7 +157,6 @@ if exp3_button:
         wic_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
         st.plotly_chart(wic_fig)
 
-        st.divider()
 
         st.subheader(f'ALL EXTRAS GIVEN: {db.total_extras()}')
 
@@ -194,7 +193,18 @@ if exp3_button:
         p_cap = db.purple_cap_by_season()
         st.plotly_chart(px.scatter(p_cap, x=p_cap['Season'], y=p_cap['Wickets'], color=p_cap['Name'], size=p_cap['Wickets'].astype(int), size_max=25).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending')))
 
+        st.subheader("Maiden Overs and Hat Tricks")
+        maiden_col1,maiden_col2 = st.columns(2)
+        with maiden_col1:
+            all_maidens = db.all_maidens()
+            st.subheader(f"ALL maiden overs: {all_maidens}")
+        with maiden_col2:
+            st.subheader("ALL Hat Tricks: ")
 
+        m_h_fig = go.Figure()
+        df_s, df_nm = db.maiden_overs_by_season()
+        m_h_fig.add_trace(go.Bar(x=df_s, y=df_nm, name='Maiden Overs')).update_layout(xaxis=dict(type='category'))
+        st.plotly_chart(m_h_fig)
 
 
 ###############################################################################

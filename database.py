@@ -849,11 +849,10 @@ class DB:
                         ''')
         data = self.my_cursor.fetchall()
         s = []
-        num = []
         for i in data:
             s.append(i[0])
-            num.append(i[1])
-        return s, num
+
+        return s[0]
 
     def maiden_overs_by_season(self):
         self.my_cursor.execute('''
