@@ -203,7 +203,7 @@ if exp3_button:
 
         m_h_fig = go.Figure()
         df_s, df_nm = db.maiden_overs_by_season()
-        m_h_fig.add_trace(go.Bar(x=df_s, y=df_nm, name='Maiden Overs')).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
+        m_h_fig.add_trace(go.Bar(x=df_s, y=df_nm, name='Maiden Overs')).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending', title='Season'), yaxis=dict(title='Maiden Overs'))
         st.plotly_chart(m_h_fig)
 
 
