@@ -211,4 +211,11 @@ if exp3_button:
         dots_maidens_ht_fig.add_trace(go.Scatter(x=ht_df['Season'].unique(), y=ht_df.groupby('Season')['Total'].first(), name='Hat Tricks', mode='markers', marker=dict(size=19)))
         dots_maidens_ht_fig.update_layout(xaxis=dict(type='category',categoryorder= 'category ascending', title='Season'), yaxis=dict(title='Dots, Maidens and Hat Tricks'))
         st.plotly_chart(dots_maidens_ht_fig)
+
+        st.subheader("Hat Tricks by Bowlers")
+        ht_by_season = px.bar(ht_df, x=ht_df['Season'], y=ht_df['Hat Tricks'], color=ht_df['Bowler'])
+        ht_by_season.update_layout(
+                xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
+                yaxis_title='No. of Hat Tricks', legend_title="Bowlers")
+        st.plotly_chart(ht_by_season)
 ###############################################################################
