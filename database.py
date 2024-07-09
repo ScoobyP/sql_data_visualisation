@@ -12,11 +12,11 @@ class DB:
         try:
             load_dotenv()
             #self.mydb = mysql.connector.connect(
-                #host='',
-                #user='',
+                #host='localhost',
+                #user='root',
                 #password='',
-                #port='',
-                #database=''
+                #port='3306',
+                #database='ipl_OLAP'
             #)
             self.mydb = mysql.connector.connect(
              host=os.getenv("aiven_url1"),
@@ -854,21 +854,53 @@ class DB:
 
         return s[0]
 
-    def maiden_overs_by_season(self):
-        self.my_cursor.execute('''
+    @st.cache_data
+    def all_hattricks(_self):
+        _self.my_cursor.execute('''
+                       CALL hatTrick_player_by_season()
+                                ''')
+        data = _self.my_cursor.fetchall()
+        s = []
+        b=[]
+        ht=[]
+        tht=[]
+        for i in data:
+            s.append(i[0])
+            b.append(i[1])
+            ht.append(i[2])
+            tht.append(i[3])
+        df = pd.DataFrame({'Season': s, 'Bowler':b, 'Hat Tricks': ht, 'Total':tht})
+        return df
+
+    @st.cache_data
+    def maiden_overs_by_season(_self):
+        _self.my_cursor.execute('''
         SELECT season,COUNT(*) AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball),SUM(runs_off_bat)+SUM(extras) AS 'total' FROM all_deliveries
         WHERE innings < 3
         GROUP BY season, match_id, innings, FLOOR(ball)) a1
         WHERE total=0 AND innings < 3
         GROUP BY season
                 ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         s = []
         num =[]
         for i in data:
             s.append(i[0])
             num.append(i[1])
         return s,num
+
+    def hattricks_by_season(self):
+        self.my_cursor.execute('''
+                
+                        ''')
+        data = self.my_cursor.fetchall()
+        s = []
+        num = []
+        for i in data:
+            s.append(i[0])
+            num.append(i[1])
+        return s, num
+
     def all_batsman_names(self):
         batsman = []
         self.my_cursor.execute('''
