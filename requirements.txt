@@ -4,6 +4,3 @@ mysql-connector-python~=8.4.0
 sqlalchemy~=2.0.30
 pandas~=2.2.2
 python-dotenv~=1.0.1
-
-
-numpy~=1.26.4

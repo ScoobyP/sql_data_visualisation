@@ -12,11 +12,11 @@ class DB:
         try:
             load_dotenv()
             #self.mydb = mysql.connector.connect(
-                #host='localhost',
-                #user='root',
+                #host='',
+                #user='',
                 #password='',
-                #port='3306',
-                #database='ipl_OLAP'
+                #port='',
+                #database=''
             #)
             self.mydb = mysql.connector.connect(
              host=os.getenv("aiven_url1"),
