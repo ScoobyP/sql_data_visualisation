@@ -197,7 +197,7 @@ if exp3_button:
         maiden_col1,maiden_col2 = st.columns(2)
         with maiden_col1:
             all_maidens = db.all_maidens()
-            st.subheader(f"ALL dot balls: {all_maidens}")
+            st.subheader(f"ALL Dot Balls: {all_maidens}")
         with maiden_col2:
             ht_df = db.all_hattricks()
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
@@ -212,7 +212,7 @@ if exp3_button:
         dots_maidens_ht_fig.update_layout(xaxis=dict(type='category',categoryorder= 'category ascending', title='Season'), yaxis=dict(title='Dots, Maidens and Hat Tricks'))
         st.plotly_chart(dots_maidens_ht_fig)
 
-        st.subheader("Breakdown of Hat Tricks by Season")
+        st.subheader("Breakdown of All Hat Tricks by Season")
         ht_by_season = px.bar(ht_df, x=ht_df['Season'], y=ht_df['Hat Tricks'], color=ht_df['Bowler'])
         ht_by_season.update_layout(
                 xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
