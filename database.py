@@ -842,10 +842,10 @@ class DB:
 
     def all_maidens(self):
         self.my_cursor.execute('''
-                SELECT COUNT(*) AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball),SUM(runs_off_bat)+SUM(extras) AS 'total' FROM all_deliveries
-                WHERE innings <3
-                GROUP BY season, match_id, innings, FLOOR(ball)) a1
-                WHERE total=0 AND innings < 3
+                SELECT  COUNT(overs)  AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball) AS overs,COUNT(ball) AS num_of_ball, SUM(runs_off_bat)+SUM(extras) AS 'total' FROM all_deliveries
+                WHERE innings < 3
+                GROUP BY season, match_id, innings, FLOOR(ball)
+                HAVING total=0 AND num_of_ball  = 6 ) b1
                         ''')
         data = self.my_cursor.fetchall()
         s = []
