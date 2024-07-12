@@ -278,8 +278,23 @@ class DB:
 
         return sorted(season), num_matches
 
-    def matches_month_timeline(self):
-        pass
+    def titles_by_season(self):
+        self.my_cursor.execute('''
+        SELECT season, winner, COUNT(winner) AS times_won FROM all_matches
+        WHERE match_type = 'Final'
+        GROUP BY season, winner
+        ORDER BY season
+        ''')
+        data = self.my_cursor.fetchall()
+        s=[]
+        winner=[]
+        times=[]
+        for i in data:
+            s.append(i[0])
+            winner.append(i[1])
+            times.append(i[2])
+        df = pd.DataFrame({'Season': s, 'Winner': winner, 'Times Won': times})
+        return df
 
     # IPL Matches' Stats END
 

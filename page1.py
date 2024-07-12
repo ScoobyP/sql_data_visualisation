@@ -77,6 +77,11 @@ if exp1_button:
 
         st.plotly_chart(matches_in_cities)
 
+        st.subheader('IPL Season Titles by Teams')
+        titles = db.titles_by_season()
+        titles_fig = px.bar(titles, y=titles['Winner'], x=titles['Times Won'], color=titles['Season'], orientation='h', hover_data={'Season': True, 'Times Won':False, 'Winner': True})
+        titles_fig.update_layout(yaxis=dict(type='category', categoryorder= 'category ascending'))
+        st.plotly_chart(titles_fig)
 
 st.divider()
 
