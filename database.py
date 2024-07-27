@@ -419,6 +419,7 @@ class DB:
         GROUP BY season, match_id, striker
         HAVING total_runs > 99) a1
         GROUP BY season
+        ORDER BY season ASC
          ''')
         data = _self.my_cursor.fetchall()
         for item in data:
@@ -436,6 +437,7 @@ class DB:
         GROUP BY season, match_id, striker
         HAVING total_runs BETWEEN 49 AND 99) a1
         GROUP BY season
+        ORDER BY season ASC
          ''')
         data = _self.my_cursor.fetchall()
         for item in data:
