@@ -884,7 +884,7 @@ class DB:
     @st.cache_data
     def all_hattricks(_self):
         _self.my_cursor.execute('''
-                       CALL hatTrick_player_by_season()
+                       CALL hatTrick_players_by_season()
                                 ''')
         data = _self.my_cursor.fetchall()
         s = []
