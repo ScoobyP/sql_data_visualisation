@@ -141,7 +141,7 @@ if exp2_button:
         all_ies.add_trace(go.Scatter(x=fif['Season'], y=fif['Fifties'].astype(int), name='Fifties', mode='lines+markers')).update_traces(marker=dict(size = 15, symbol='diamond'))
         all_ies.add_trace(go.Bar(x = tot['Season'], y= tot['Total'], name='Total'))
 
-        all_ies.update_layout(xaxis=dict(type='category'))
+        #all_ies.update_layout(xaxis=dict(type='category'))
         st.plotly_chart(all_ies)
 
 st.divider()
