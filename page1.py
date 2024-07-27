@@ -96,7 +96,7 @@ if exp2_button:
         runs_fig.add_trace(go.Scatter(x=runs_df['Season'],y=runs_df['Runs Scored'], name = 'Scored', mode='markers'))
         runs_fig.add_trace(go.Scatter(x=runs_df['Season'], y=runs_df['Extras'],name = 'Extras', mode='markers'))
         runs_fig.update_traces(marker=dict(size=20, symbol='diamond-tall-dot'))
-        #runs_fig.update_layout(xaxis=dict(type='category', categoryorder= 'category ascending'))
+        runs_fig.update_layout(xaxis=dict(type='category'))
         st.plotly_chart(runs_fig)
 
 
