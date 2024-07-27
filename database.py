@@ -349,7 +349,7 @@ class DB:
                 FROM all_deliveries
                 WHERE innings < 3
                 GROUP BY season,striker
-                ORDER BY season,runs DESC) a1
+                ORDER BY season ASC,runs DESC) a1
                 WHERE row_num = 1
                 
                 ''')
