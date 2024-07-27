@@ -547,7 +547,7 @@ class DB:
                 GROUP BY season, bowler
                 ORDER BY season ASC, total_wickets DESC) k1
                 WHERE row_num = 1
-
+                ORDER BY season ASC
                 ''')
         data = _self.my_cursor.fetchall()
         for item in data:
