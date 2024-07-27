@@ -451,7 +451,7 @@ class DB:
         df = pd.DataFrame({'Season': _self.num_fifties_by_season()['Season'],
                            'Total': _self.num_fifties_by_season()['Fifties'] + _self.num_centuries_by_season()[
                                'Centuries']})
-        return df.sort_values(by='Season')
+        return df
 
     # IPL Batting Stats END
 
