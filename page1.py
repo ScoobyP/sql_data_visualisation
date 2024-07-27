@@ -116,7 +116,7 @@ if exp2_button:
         boundary_fig.add_trace(go.Scatter(x = season_boundaries, y = tot_six, name = 'Sixes', mode = 'lines+markers'))
         boundary_fig.add_trace(go.Scatter(x=season_boundaries, y=tot_four, name = 'Fours', mode = 'lines+markers'))
         boundary_fig.update_traces(marker=dict(size=15))
-        boundary_fig.update_layout(xaxis=dict(type='category'))
+        #boundary_fig.update_layout(xaxis=dict(type='category'))
         st.plotly_chart(boundary_fig)
 
 
