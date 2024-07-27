@@ -51,7 +51,7 @@ class DB:
         self.my_cursor.execute('''
         SELECT season FROM ipl_OLAP.all_deliveries
         GROUP BY  season
-        ORDER BY season ASC LIMIT 1
+        ORDER BY season LIMIT 1
         ''')
         data = self.my_cursor.fetchone()
         return str(data[0])
