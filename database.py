@@ -325,6 +325,7 @@ class DB:
         SELECT season,SUM(runs_off_bat),SUM(extras), SUM(runs_off_bat)+SUM(extras) FROM ipl_OLAP.all_deliveries 
         WHERE innings < 3
         GROUP BY season
+        ORDER BY season ASC
         ''')
         data = _self.my_cursor.fetchall()
         for i in data:
