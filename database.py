@@ -31,6 +31,12 @@ class DB:
         except Exception as e:
             print(f'Connection Error: {e}')
 
+    # Clean table - team names and season
+    def clean_table(self):
+        self.my_cursor.execute('''
+        CALL update_OLAP_all_matches() 
+        ''')
+
     # Front Table START
 
     @st.cache_data
@@ -43,7 +49,7 @@ class DB:
 
     def first_edition(self):
         self.my_cursor.execute('''
-        SELECT season FROM all_deliveries
+        SELECT season FROM ipl_OLAP.all_deliveries
         GROUP BY  season
         ORDER BY season ASC LIMIT 1
         ''')
@@ -52,7 +58,7 @@ class DB:
 
     def latest_edition(self):
         self.my_cursor.execute('''
-        SELECT season FROM all_deliveries
+        SELECT season FROM ipl_OLAP.all_deliveries
         GROUP BY  season
         ORDER BY season DESC LIMIT 1
         ''')
