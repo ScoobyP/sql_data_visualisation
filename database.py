@@ -129,10 +129,11 @@ class DB:
             runs.append(f' ({str(round((i[1])))})')
         return pd.DataFrame({'Name': name, 'Runs': runs})
 
-    def most_wickets(self):
+    @st.cache_data
+    def most_wickets(_self):
         name = []
         wicks = []
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT bowler,
         SUM(CASE WHEN wicket_type IS NOT NULL THEN 1 ELSE 0 END) AS 'total_wickets'
         FROM (SELECT * FROM all_deliveries
@@ -141,7 +142,7 @@ class DB:
         GROUP BY bowler
         ORDER BY total_wickets DESC LIMIT 1
         ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         for i in data:
             name.append(str(i[0]))
             wicks.append(f' ({str(i[1])})')
@@ -488,7 +489,8 @@ class DB:
         _self.my_cursor.execute('''
         SELECT season, wicket_type, COUNT(wicket_type) AS 'total_wickets' FROM ipl_OLAP.all_deliveries
         WHERE wicket_type != '' AND innings < 3
-        GROUP BY season, wicket_type''')
+        GROUP BY season , wicket_type
+        ORDER BY season ASC''')
         data = _self.my_cursor.fetchall()
         for item in data:
             season.append(item[0])
