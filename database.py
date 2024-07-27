@@ -902,12 +902,12 @@ class DB:
     @st.cache_data
     def maiden_overs_by_season(_self):
         _self.my_cursor.execute('''
-        SELECT season, COUNT(overs)  AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball) AS overs,COUNT(ball) AS num_of_ball, SUM(runs_off_bat)+SUM(extras) AS 'total' FROM all_deliveries
+        SELECT season, COUNT(overs)  AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball) AS overs,COUNT(ball) AS num_of_ball, SUM(runs_off_bat)+SUM(extras) AS 'total' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         GROUP BY season, match_id, innings, FLOOR(ball)
         HAVING total=0 AND num_of_ball  = 6 ) b1
         GROUP BY season
-        ORDER BY season
+        ORDER BY season ASC
                 ''')
         data = _self.my_cursor.fetchall()
         s = []
