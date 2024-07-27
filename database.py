@@ -400,7 +400,7 @@ class DB:
         WHERE runs_off_bat = 4 AND innings < 3
         GROUP BY season) t2
         ON t1.season = t2.season
-        ORDER BY t1.season
+        ORDER BY t1.season ASC
         ''')
         data = _self.my_cursor.fetchall()
         for item in data:
