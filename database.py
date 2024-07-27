@@ -426,7 +426,7 @@ class DB:
             s.append(item[0])
             cen.append(item[1])
         df = pd.DataFrame({'Season': s, 'Centuries': cen})
-        return df.sort_values(by='Season')
+        return df
 
     @st.cache_data
     def num_fifties_by_season(_self):
@@ -444,7 +444,7 @@ class DB:
             s.append(item[0])
             fif.append(item[1])
         df = pd.DataFrame({'Season': s, 'Fifties': fif})
-        return df.sort_values(by='Season')
+        return df
 
     @st.cache_data
     def total_fifties_centuries(_self):
