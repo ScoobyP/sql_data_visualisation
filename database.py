@@ -31,8 +31,14 @@ class DB:
         except Exception as e:
             print(f'Connection Error: {e}')
 
-    # Clean table - team names and season
-    def clean_table(self):
+    # Clean table - team names and season in all_matches
+    def clean_matches_table(self):
+        self.my_cursor.execute('''
+        CALL update_OLAP_all_matches() 
+        ''')
+
+        # Clean table - team names and season in all_deliveries
+    def clean_deliveries_table(self):
         self.my_cursor.execute('''
         CALL update_OLAP_all_matches() 
         ''')
