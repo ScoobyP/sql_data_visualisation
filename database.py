@@ -890,61 +890,8 @@ class DB:
     @st.cache_data
     def all_hattricks(_self):
         try:
-            # Execute SQL Query
             _self.my_cursor.execute('''
-            DROP TEMPORARY TABLE IF EXISTS whole_table;
-            DROP TEMPORARY TABLE IF EXISTS small_table;
-            DROP TEMPORARY TABLE IF EXISTS hattrick_individual;
-            DROP TEMPORARY TABLE IF EXISTS hattrick_total;
-            DROP TEMPORARY TABLE IF EXISTS left_join;
-            DROP TEMPORARY TABLE IF EXISTS right_join;
-
-            CREATE TEMPORARY TABLE whole_table AS
-            SELECT *,
-                   FLOOR(ball) AS overs,
-                   IF(wicket_type IN ('caught', 'bowled', 'stumped', 'lbw','caught and bowled', 'hit wicket'), 1, 0) AS wkt_by_bowler
-            FROM ipl_OLAP.all_deliveries;
-
-            CREATE TEMPORARY TABLE small_table AS
-            SELECT season,
-                   match_id,
-                   innings,
-                   bowler,
-                   CAST(overs AS SIGNED) AS overs,
-                   CAST(ball AS DECIMAL(3,1)) AS ball,
-                   wkt_by_bowler,
-                   LEAD(wkt_by_bowler,1) OVER(PARTITION BY match_id,innings,bowler ORDER BY CAST(ball AS DECIMAL(3,1))) AS 2wkt,
-                   LEAD(wkt_by_bowler,2) OVER(PARTITION BY match_id,innings,bowler ORDER BY CAST(ball AS DECIMAL(3,1))) AS 3wkt
-            FROM whole_table;
-
-            CREATE TEMPORARY TABLE hattrick_individual AS
-            SELECT season AS season_i,
-                   bowler,
-                   SUM(IF(wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1, 1, 0)) AS hattricks
-            FROM small_table
-            GROUP BY season, bowler
-            HAVING hattricks > 0;
-
-            CREATE TEMPORARY TABLE hattrick_total AS
-            SELECT season AS season_t,
-                   SUM(IF(wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1, 1, 0)) AS total_ht
-            FROM small_table
-            GROUP BY season;
-
-            SELECT season_t, 
-                   IFNULL(bowler, 'None') AS Bowler, 
-                   IFNULL(hattricks, 0) AS 'Hat Tricks', 
-                   total_ht 
-            FROM (
-                SELECT * FROM hattrick_individual a1
-                RIGHT JOIN hattrick_total a2
-                ON a1.season_i = a2.season_t
-                UNION
-                SELECT * FROM hattrick_individual b1
-                RIGHT JOIN hattrick_total b2
-                ON b1.season_i = b2.season_t
-            ) x1
-            ORDER BY x1.season_t ASC;
+            CALL hatTrick_players_by_season()
             ''')
 
             # Fetch data
