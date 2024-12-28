@@ -224,7 +224,7 @@ if exp3_button:
         st.plotly_chart(dots_maidens_ht_fig)
 
 
-        ht_by_season = px.bar(ht_df, x=ht_df['Season'].sort_values(ascending=True), y=ht_df['Hat Tricks'], color=ht_df['Bowler'])
+        ht_by_season = px.bar(ht_df, x='Season', y=ht_df['Hat Tricks'], color=ht_df['Bowler'])
         ht_by_season.update_layout(
                 xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
                 yaxis_title='No. of Hat Tricks', legend_title="Bowlers", title='Breakdown of Hat Tricks by Season')
