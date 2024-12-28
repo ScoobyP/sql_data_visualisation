@@ -887,9 +887,16 @@ class DB:
 
         return s[0]
 
-    @st.cache_data
+    #@st.cache_resource
     def all_hattricks(_self):
         _self.my_cursor.execute('''
+        DROP TEMPORARY TABLE IF EXISTS whole_table;
+        DROP TEMPORARY TABLE IF EXISTS small_table;
+        DROP TEMPORARY TABLE IF EXISTS hattrick_individual;
+        DROP TEMPORARY TABLE IF EXISTS hattrick_total;
+        DROP TEMPORARY TABLE IF EXISTS left_join;
+        DROP TEMPORARY TABLE IF EXISTS right_join;
+        
          CREATE TEMPORARY TABLE whole_table AS
         (SELECT *,
            FLOOR(ball) AS 'overs',
@@ -938,7 +945,7 @@ class DB:
     UNION
     SELECT * FROM right_join ) x1
         ORDER BY x1.season_t ASC;
-    ''')
+        ''')
         data = _self.my_cursor.fetchall()
         s = []
         b=[]
