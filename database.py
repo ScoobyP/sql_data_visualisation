@@ -887,7 +887,7 @@ class DB:
 
         return s[0]
 
-    #@st.cache_resource
+    @st.cache_resource
     def all_hattricks(_self):
         _self.my_cursor.execute('''
         DROP TEMPORARY TABLE IF EXISTS whole_table;
@@ -897,11 +897,10 @@ class DB:
         DROP TEMPORARY TABLE IF EXISTS left_join;
         DROP TEMPORARY TABLE IF EXISTS right_join;
         
-         CREATE TEMPORARY TABLE whole_table AS
-        (SELECT *,
-           FLOOR(ball) AS 'overs',
+        CREATE TEMPORARY TABLE whole_table AS
+        (SELECT *, FLOOR(ball) AS 'overs',
            IF(wicket_type IN ('caught', 'bowled', 'stumped', 'lbw','caught and bowled', 'hit wicket'), 1, 0) AS wkt_by_bowler
-    FROM ipl_OLAP.all_deliveries);
+            FROM ipl_OLAP.all_deliveries);
     
         -- Create temporary table small_table
         CREATE TEMPORARY TABLE small_table AS
@@ -917,34 +916,34 @@ class DB:
                     FROM whole_table ORDER BY match_id, overs,ball);
     
         -- Create result table for individual bowler hattricks
-    CREATE TEMPORARY TABLE hattrick_individual AS
-    SELECT season AS season_i,
-           bowler,
-           SUM(IF((wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1), 1, 0 )) AS hattricks
-    FROM small_table
-    GROUP BY season, bowler
-    HAVING hattricks>0 ORDER BY season;
+        CREATE TEMPORARY TABLE hattrick_individual AS
+        SELECT season AS season_i,
+               bowler,
+               SUM(IF((wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1), 1, 0 )) AS hattricks
+        FROM small_table
+        GROUP BY season, bowler
+        HAVING hattricks>0 ORDER BY season;
     
-    CREATE TEMPORARY TABLE hattrick_total AS
-    SELECT season AS season_t,
-           SUM(IF((wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1), 1, 0 )) AS total_ht
-    FROM small_table
-    GROUP BY season ORDER BY season;
-    
-    CREATE TEMPORARY TABLE left_join AS
-        (SELECT * FROM hattrick_individual a1
-        RIGHT JOIN hattrick_total a2
-            ON a1.season_i = a2.season_t);
-    
-    CREATE TEMPORARY TABLE right_join AS
-    (SELECT * FROM hattrick_individual b1
-        RIGHT JOIN hattrick_total b2
-            ON b1.season_i = b2.season_t);
-    
-    SELECT season_t, IFNULL(bowler,'None') AS Bowler, IFNULL(hattricks,0) AS 'Hat_tricks', total_ht FROM (SELECT * FROM left_join
-    UNION
-    SELECT * FROM right_join ) x1
-        ORDER BY x1.season_t ASC;
+        CREATE TEMPORARY TABLE hattrick_total AS
+        SELECT season AS season_t,
+               SUM(IF((wkt_by_bowler=1 AND 2wkt=1 AND 3wkt=1), 1, 0 )) AS total_ht
+        FROM small_table
+        GROUP BY season ORDER BY season;
+        
+        CREATE TEMPORARY TABLE left_join AS
+            (SELECT * FROM hattrick_individual a1
+            RIGHT JOIN hattrick_total a2
+                ON a1.season_i = a2.season_t);
+        
+        CREATE TEMPORARY TABLE right_join AS
+        (SELECT * FROM hattrick_individual b1
+            RIGHT JOIN hattrick_total b2
+                ON b1.season_i = b2.season_t);
+        
+        SELECT season_t, IFNULL(bowler,'None') AS Bowler, IFNULL(hattricks,0) AS 'Hat_tricks', total_ht FROM (SELECT * FROM left_join
+        UNION
+        SELECT * FROM right_join ) x1
+            ORDER BY x1.season_t ASC;
         ''')
         data = _self.my_cursor.fetchall()
         s = []
