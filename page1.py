@@ -202,7 +202,7 @@ if exp3_button:
         st.write('''
                     * Maiden over is when the bowler concedes 0 runs for the entire over. 
                     1 Over = 6 deliveries (balls). Three consecutive wickets by the same bowler constitutes a hat-trick.
-                    ''')
+                    ''' )
 
         maiden_col1,maiden_col2 = st.columns(2)
         with maiden_col1:
