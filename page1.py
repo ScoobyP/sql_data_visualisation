@@ -203,14 +203,14 @@ if exp3_button:
         with maiden_col1:
             all_maidens = db.all_maidens()
             st.subheader(f"ALL Maiden Overs: {all_maidens}")
-
+            st.write('''
+            Maiden over is when the bowler concedes 0 runs for the entire over. 
+            1 Over = 6 deliveries (balls)
+            ''')
         with maiden_col2:
             ht_df = db.all_hattricks()
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
-        st.write('''
-                    Maiden over is when the bowler concedes 0 runs for the entire over. 
-                    1 Over = 6 deliveries (balls)
-                    ''')
+
 
         #hattrick_fig = px.scatter(ht_df,x=ht_df['Season'].unique(), y=ht_df.groupby('Season')['Total'].first(), labels={'x': 'Season', 'y':'Hat Tricks'}).update_layout(yaxis=dict(title='Dots, Maidens and Hat Tricks'), xaxis=dict(type='category', categoryorder= 'category ascending', title='Season')).update_traces(marker=dict(size=19))
         dots_maidens_ht_fig =go.Figure()
