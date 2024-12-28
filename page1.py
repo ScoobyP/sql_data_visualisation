@@ -199,14 +199,16 @@ if exp3_button:
         st.plotly_chart(px.scatter(p_cap, x=p_cap['Season'], y=p_cap['Wickets'], color=p_cap['Name'], size=p_cap['Wickets'].astype(int), size_max=25).update_layout(xaxis=dict(type='category', categoryorder= 'category ascending')))
 
         st.subheader("Maidens and Hat Tricks")
+        st.write('''
+                    * Maiden over is when the bowler concedes 0 runs for the entire over. 
+                    1 Over = 6 deliveries (balls). Three consecutive wickets by the same bowler constitutes a hat-trick.
+                    ''')
+
         maiden_col1,maiden_col2 = st.columns(2)
         with maiden_col1:
             all_maidens = db.all_maidens()
             st.subheader(f"ALL Maiden Overs: {all_maidens}")
-            st.write('''
-            Maiden over is when the bowler concedes 0 runs for the entire over. 
-            1 Over = 6 deliveries (balls)
-            ''')
+
         with maiden_col2:
             ht_df = db.all_hattricks()
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
