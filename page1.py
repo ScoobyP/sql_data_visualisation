@@ -203,6 +203,10 @@ if exp3_button:
         with maiden_col1:
             all_maidens = db.all_maidens()
             st.subheader(f"ALL Maiden Overs: {all_maidens}")
+            st.text('''
+            Maiden over is when the bowler concedes 0 runs for the entire over. 
+            1 Over = 6 deliveries (balls)
+            ''')
         with maiden_col2:
             ht_df = db.all_hattricks()
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
