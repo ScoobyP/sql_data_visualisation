@@ -203,7 +203,7 @@ if exp3_button:
         with maiden_col1:
             all_maidens = db.all_maidens()
             st.subheader(f"ALL Maiden Overs: {all_maidens}")
-            st.text('''
+            st.write('''
             Maiden over is when the bowler concedes 0 runs for the entire over. 
             1 Over = 6 deliveries (balls)
             ''')
