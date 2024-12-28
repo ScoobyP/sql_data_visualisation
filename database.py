@@ -887,7 +887,7 @@ class DB:
 
         return s[0]
 
-    @st.cache_resource
+    #@st.cache_resource
     def all_hattricks(_self):
         _self.my_cursor.execute('''
         DROP TEMPORARY TABLE IF EXISTS whole_table;
