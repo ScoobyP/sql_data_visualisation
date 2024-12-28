@@ -889,21 +889,16 @@ class DB:
 
     #@st.cache_data
     def all_hattricks(_self):
-        try:
-            _self.my_cursor.execute('''
-            CALL hatTrick_players_by_season()
-            ''')
+        _self.my_cursor.execute('''
+        CALL hatTrick_players_by_season()
+        ''')
 
-            # Fetch data
-            data = _self.my_cursor.fetchall()
+        # Fetch data
+        data = _self.my_cursor.fetchall()
 
-            # Parse data into DataFrame
-            df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
-            return df
-
-        except Exception as e:
-            st.error(f"Error fetching hat-trick data: {e}")
-            return pd.DataFrame()
+        # Parse data into DataFrame
+        df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
+        return df
 
     @st.cache_data
     def maiden_overs_by_season(_self):
