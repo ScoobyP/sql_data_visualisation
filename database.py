@@ -40,7 +40,7 @@ class DB:
         # Clean table - team names and season in all_deliveries
     def clean_deliveries_table(self):
         self.my_cursor.execute('''
-        CALL update_OLAP_all_matches() 
+        CALL update_OLAP_all_deliveries() 
         ''')
 
     # Front Table START
