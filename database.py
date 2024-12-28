@@ -890,10 +890,7 @@ class DB:
     @st.cache_data
     def all_hattricks(_self):
         _self.my_cursor.execute('''
-                       DELIMITER //
-
-CREATE DEFINER = avnadmin@`%` PROCEDURE hatTrick_players_by_season()
-BEGIN
+                       
     -- Clean up any leftover temporary tables from previous executions
     DROP TEMPORARY TABLE IF EXISTS whole_table;
     DROP TEMPORARY TABLE IF EXISTS small_table;
@@ -971,10 +968,6 @@ BEGIN
     DROP TEMPORARY TABLE IF EXISTS hattrick_total;
     DROP TEMPORARY TABLE IF EXISTS left_join;
     DROP TEMPORARY TABLE IF EXISTS right_join;
-
-END //
-
-DELIMITER ;
 
                                 ''')
         data = _self.my_cursor.fetchall()
