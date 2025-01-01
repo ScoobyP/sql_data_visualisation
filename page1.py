@@ -211,7 +211,7 @@ if exp3_button:
 
         df_m = db.maiden_overs_by_season()
         dots_maidens_ht_fig = go.Figure()
-        dots_maidens_ht_fig.add_trace(go.Bar(x = sorted(df_m['season']), y=df_m['maiden_overs']))
+        dots_maidens_ht_fig.add_trace(go.Bar(x = sorted(df_m['season']), y=df_m['maiden_overs'], name = 'Maiden Overs'))
 
 
         ht_df = db.all_hattricks()
