@@ -895,9 +895,10 @@ class DB:
 
         # Fetch data
         data = _self.my_cursor.fetchall()
-        _self.my_cursor.close()
+
         # Parse data into DataFrame
         df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
+        _self.my_cursor.close()
         return df
 
     #@st.cache_data
@@ -913,6 +914,7 @@ class DB:
                 ''')
         data = _self.my_cursor.fetchall()
         df = pd.DataFrame(data, columns=['season', 'maiden_overs'])
+        _self.my_cursor.close()
         return df
 
     def hattricks_by_season(self):
