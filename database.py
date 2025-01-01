@@ -895,7 +895,7 @@ class DB:
 
         # Fetch data
         data = self.my_cursor.fetchall()
-
+        self.my_cursor.close()
         # Parse data into DataFrame
         df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
         return df
