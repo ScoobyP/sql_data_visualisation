@@ -888,22 +888,22 @@ class DB:
         return s[0]
 
     @st.cache_data
-    def all_hattricks(self):
-        self.my_cursor.execute('''
+    def all_hattricks(_self):
+        _self.my_cursor.execute('''
         CALL hatTrick_players_by_season()
         ''')
 
         # Fetch data
-        data = self.my_cursor.fetchall()
-        self.my_cursor.close()
+        data = _self.my_cursor.fetchall()
+
         # Parse data into DataFrame
         df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
         return df
 
     @st.cache_data
-    def maiden_overs_by_season(self):
+    def maiden_overs_by_season(_self):
 
-        self.my_cursor.execute('''
+        _self.my_cursor.execute('''
         SELECT season, COUNT(overs)  AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball) AS overs,COUNT(ball) AS num_of_ball, SUM(runs_off_bat)+SUM(extras) AS 'total' FROM ipl_OLAP.all_deliveries
         WHERE innings < 3
         GROUP BY season, match_id, innings, FLOOR(ball)
@@ -911,7 +911,7 @@ class DB:
         GROUP BY season
         ORDER BY season
                 ''')
-        data = self.my_cursor.fetchall()
+        data = _self.my_cursor.fetchall()
         df = pd.DataFrame(data, columns=['season', 'maiden_overs'])
         return df
 
