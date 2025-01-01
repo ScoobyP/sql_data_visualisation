@@ -220,7 +220,7 @@ if exp3_button:
 
 
         dots_maidens_ht_fig.add_trace(go.Scatter(x = ht_df['Season'].sort_values(ascending=True).unique(), y=ht_df.groupby('Season')['Total'].first(), name='Hat Tricks', mode='markers', marker=dict(size=19)))
-        #dots_maidens_ht_fig.add_trace(go.Bar(x = ht_df['Season'].sort_values(ascending=True).unique(), y=df_m['maiden_overs']))
+        dots_maidens_ht_fig.add_trace(go.Bar(x = ht_df['Season'].sort_values(ascending=True).unique(), y=df_m['maiden_overs']))
         dots_maidens_ht_fig.update_layout(xaxis=dict(title='Season'), yaxis=dict(title='Maidens and Hat Tricks'))
         st.plotly_chart(dots_maidens_ht_fig)
 
