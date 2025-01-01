@@ -887,7 +887,7 @@ class DB:
 
         return s[0]
 
-    #@st.cache_data
+    @st.cache_data
     def all_hattricks(_self):
         _self.my_cursor.execute('''
         CALL hatTrick_players_by_season()
@@ -900,7 +900,7 @@ class DB:
         df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
         return df
 
-    #@st.cache_data
+    @st.cache_data
     def maiden_overs_by_season(_self):
         _self.my_cursor.execute('''
         SELECT season, COUNT(overs)  AS 'maiden_overs' FROM (SELECT season, match_id, innings, FLOOR(ball) AS overs,COUNT(ball) AS num_of_ball, SUM(runs_off_bat)+SUM(extras) AS 'total' FROM ipl_OLAP.all_deliveries
