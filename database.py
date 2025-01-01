@@ -911,7 +911,7 @@ class DB:
         ORDER BY season
                 ''')
         data = self.my_cursor.fetchall()
-
+        self.my_cursor.close()
         df = pd.DataFrame(data, columns = ['season', 'maiden_overs'])
         return df
 
