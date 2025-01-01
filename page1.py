@@ -209,18 +209,19 @@ if exp3_button:
             all_maidens = db.all_maidens()
             st.subheader(f"ALL Maiden Overs: {all_maidens}")
 
+        ht_df = db.all_hattricks()
         with maiden_col2:
-            ht_df = db.all_hattricks()
+
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
 
 
         #hattrick_fig = px.scatter(ht_df,x=ht_df['Season'].unique(), y=ht_df.groupby('Season')['Total'].first(), labels={'x': 'Season', 'y':'Hat Tricks'}).update_layout(yaxis=dict(title='Dots, Maidens and Hat Tricks'), xaxis=dict(type='category', categoryorder= 'category ascending', title='Season')).update_traces(marker=dict(size=19))
-        dots_maidens_ht_fig =go.Figure()
-        df_s, df_nm = db.maiden_overs_by_season()
+        dots_maidens_ht_fig = go.Figure()
+        df_m = db.maiden_overs_by_season()
 
-        dots_maidens_ht_fig.add_trace(go.Bar(x=df_s, y=df_nm, name='Maiden Overs'))
-        dots_maidens_ht_fig.add_trace(go.Scatter(x=df_s, y=ht_df.groupby('Season')['Total'].first(), name='Hat Tricks', mode='markers', marker=dict(size=19)))
-        dots_maidens_ht_fig.update_layout(xaxis=dict( title='Season'), yaxis=dict(title='Maidens and Hat Tricks'))
+        dots_maidens_ht_fig.add_trace(go.Bar(x=df_m['season'], y=df_m['maiden_overs'], name='Maiden Overs'))
+        dots_maidens_ht_fig.add_trace(go.Scatter(x=df_m['season'], y=ht_df.groupby('Season')['Total'].first(), name='Hat Tricks', mode='markers', marker=dict(size=19)))
+        dots_maidens_ht_fig.update_layout(xaxis = dict(title='Season'), yaxis = dict(title='Maidens and Hat Tricks'))
         st.plotly_chart(dots_maidens_ht_fig)
 
 

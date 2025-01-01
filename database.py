@@ -887,7 +887,7 @@ class DB:
 
         return s[0]
 
-    #@st.cache_data
+    @st.cache_data
     def all_hattricks(_self):
         _self.my_cursor.execute('''
         CALL hatTrick_players_by_season()
@@ -908,15 +908,13 @@ class DB:
         GROUP BY season, match_id, innings, FLOOR(ball)
         HAVING total=0 AND num_of_ball  = 6 ) b1
         GROUP BY season
-        ORDER BY season ASC
+        ORDER BY season
                 ''')
         data = _self.my_cursor.fetchall()
-        s = []
-        num =[]
-        for i in data:
-            s.append(i[0])
-            num.append(i[1])
-        return s,num
+
+        df = pd.DataFrame(data, columns = ['season', 'maiden_overs'])
+        print(df)
+        return df
 
     def hattricks_by_season(self):
         self.my_cursor.execute('''
