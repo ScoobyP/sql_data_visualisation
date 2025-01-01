@@ -887,7 +887,7 @@ class DB:
 
         return s[0]
 
-    @st.cache_data
+    #@st.cache_data
     def all_hattricks(self):
         self.my_cursor.execute('''
         CALL hatTrick_players_by_season()
@@ -895,12 +895,11 @@ class DB:
 
         # Fetch data
         data = self.my_cursor.fetchall()
-        self.my_cursor.close()
         # Parse data into DataFrame
         df = pd.DataFrame(data, columns=['Season', 'Bowler', 'Hat Tricks', 'Total'])
         return df
 
-    @st.cache_data
+    #@st.cache_data
     def maiden_overs_by_season(self):
 
         self.my_cursor.execute('''
