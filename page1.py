@@ -214,8 +214,6 @@ if exp3_button:
 
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
 
-
-        #hattrick_fig = px.scatter(ht_df,x=ht_df['Season'].unique(), y=ht_df.groupby('Season')['Total'].first(), labels={'x': 'Season', 'y':'Hat Tricks'}).update_layout(yaxis=dict(title='Dots, Maidens and Hat Tricks'), xaxis=dict(type='category', categoryorder= 'category ascending', title='Season')).update_traces(marker=dict(size=19))
         dots_maidens_ht_fig = go.Figure()
         df_m = db.maiden_overs_by_season()
 
