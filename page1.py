@@ -206,29 +206,26 @@ if exp3_button:
 
         maiden_col1,maiden_col2 = st.columns(2)
         with maiden_col1:
-            all_maidens = db.all_maidens()
-            st.subheader(f"ALL Maiden Overs: {all_maidens}")
+            all_maiden = db.all_maidens()
+            st.subheader(f"ALL Maiden Overs: {all_maiden}")
+
+        df_m = db.maiden_overs_by_season()
+        dots_maidens_ht_fig = go.Figure()
+        dots_maidens_ht_fig.add_trace(go.Bar(x = sorted(df_m['season']), y=df_m['maiden_overs']))
+
 
         ht_df = db.all_hattricks()
         with maiden_col2:
 
             st.subheader(f"ALL Hat Tricks: {sum(ht_df['Hat Tricks'])}")
 
-
-        df_m = db.maiden_overs_by_season()
-        dots_maidens_ht_fig = go.Figure()
-
-
         dots_maidens_ht_fig.add_trace(go.Scatter(x = ht_df['Season'].sort_values(ascending=True).unique(), y=ht_df.groupby('Season')['Total'].first(), name='Hat Tricks', mode='markers', marker=dict(size=19)))
-        dots_maidens_ht_fig.add_trace(go.Bar(x = ht_df['Season'].sort_values(ascending=True).unique(), y=df_m['maiden_overs']))
         dots_maidens_ht_fig.update_layout(xaxis=dict(title='Season'), yaxis=dict(title='Maidens and Hat Tricks'))
         st.plotly_chart(dots_maidens_ht_fig)
 
 
         ht_by_season = px.bar(ht_df, x='Season', y=ht_df['Hat Tricks'], color=ht_df['Bowler'])
-        ht_by_season.update_layout(
-                xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",
-                yaxis_title='No. of Hat Tricks', legend_title="Bowlers", title='Breakdown of Hat Tricks by Season')
+        ht_by_season.update_layout(xaxis=dict(type='category', categoryorder='category ascending'), xaxis_title="Season",yaxis_title='No. of Hat Tricks', legend_title="Bowlers", title='Breakdown of Hat Tricks by Season')
         total_ht = go.Scatter(x=ht_df['Season'].unique(), y=ht_df.groupby('Season')['Total'].first(), name='Total HatTricks', mode='markers', marker=dict(size=19, symbol='diamond'))
         ht_by_season.add_trace(total_ht)
         st.plotly_chart(ht_by_season)
